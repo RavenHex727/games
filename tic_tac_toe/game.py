@@ -2,9 +2,19 @@ class TicTacToe():
     def __init__(self, players):
         self.players = players
         self.board = [[None, None, None], [None, None, None], [None, None, None]]
+        self.game_state = None
         self.set_player_numbers()
         self.turn = 0
         self.winner = None
+
+    def get_game_state_arr(self):
+        self.game_state = []
+
+        for n in range(0, len(self.board)):
+            for entry in self.board[n]:
+                self.game_state += entry
+
+        return self.game_state
 
     def set_player_numbers(self):
         for i, player in enumerate(self.players):
@@ -90,7 +100,7 @@ class TicTacToe():
     def complete_turn(self):
         for player in self.players:
             possible_translations = self.get_free_locations()
-            choice = player.choose_translation(possible_translations)
+            choice = player.choose_move(self.get_game_state_arr())
             self.board[choice[0]][choice[1]] = player.player_num
 
             if self.check_for_winner() != None:
@@ -101,4 +111,7 @@ class TicTacToe():
 
     def run_to_completion(self):
         while self.winner == None:
+            for player in self.players:
+                player.get_game_state(self.get_game_state_arr())
+
             self.complete_turn()
