@@ -1,10 +1,11 @@
 import sys
 sys.path.append('tic_tac_toe')
 from game import *
+from board import *
 from random_player import *
-import time
-import random
+import time, random, math
 from itertools import combinations
+import matplotlib.pyplot as plt
 
 '''
 file_object = open('all_possible_game_states.txt', 'a')
@@ -140,7 +141,6 @@ def mate(strategies):
         children.append(RandomPlayer(child1))
         children.append(RandomPlayer(child2))
 
-
     return children
 
 
@@ -155,26 +155,104 @@ for n in range(25):
     first_generation.append(RandomPlayer(strategy))
 
 
-total_scores = {}
-all_matchups = get_all_match_ups(first_generation)
+def get_current_gen_top_5(current_gen):
+    total_scores = {}
+    all_matchups = get_all_match_ups(current_gen)
 
-for player in first_generation:
-    total_scores[player] = 0
+    for player in current_gen:
+        total_scores[player] = 0
 
-for matchup in all_matchups:
-    win_data = run_match(matchup)
+    for matchup in all_matchups:
+        win_data = run_match(matchup)
 
-    for player in matchup:
-        for outcome in win_data:
-            if outcome == "Tie":
-                total_scores[player] += 0
+        for player in matchup:
+            for outcome in win_data:
+                if outcome == "Tie":
+                    total_scores[player] += 0
 
-            elif outcome != player:
-                total_scores[player] -= win_data[outcome]
+                elif outcome != player:
+                    total_scores[player] -= win_data[outcome]
 
-            elif outcome == player:
-                total_scores[player] += win_data[outcome]
+                elif outcome == player:
+                    total_scores[player] += win_data[outcome]
 
-optimal_strategies = get_optimal_strategies(total_scores)
+    optimal_strategies = get_optimal_strategies(total_scores)
 
-next_generation = mate(optimal_strategies)
+    #next_generation = mate(optimal_strategies)
+    return optimal_strategies
+
+
+def compare_to_gen(comparison_gen, top5_strats):
+    total_scores = {}
+
+    for player in top5_strats:
+        total_scores[player] = 0
+
+    for strat in top5_strats:
+        for old_strat in comparison_gen:
+            win_data = run_match([strat, old_strat])
+
+            for outcome in win_data:
+                if outcome == "Tie":
+                    total_scores[strat] += 0
+
+                elif outcome != strat:
+                    total_scores[strat] -= win_data[outcome]
+
+                elif outcome == strat:
+                    total_scores[strat] += win_data[outcome]
+
+    scores = list(total_scores.values())
+
+    return sum(scores) / len(scores)
+
+avg_score_vs_gen1 = []
+avg_score_vs_previous_gen = []
+
+
+current_gen = first_generation
+optimal_strats = get_current_gen_top_5(first_generation)
+avg_score_vs_gen1.append(compare_to_gen(first_generation, first_generation))
+
+for _ in range(30):
+    current_gen = mate(optimal_strats)
+    optimal_strats = get_current_gen_top_5(current_gen)
+    avg_score_vs_gen1.append(compare_to_gen(first_generation, optimal_strats))
+
+print(avg_score_vs_gen1)
+
+'''
+
+new_gen = first_generation
+optimal_strats = get_current_gen_top_5(first_generation)
+previous_generation = first_generation
+
+for _ in range(20):
+    new_gen = mate(optimal_strats)
+    optimal_strats = get_current_gen_top_5(new_gen)
+    avg_score_vs_previous_gen.append(compare_to_gen(previous_generation, optimal_strats))
+    previous_generation = new_gen
+
+print(avg_score_vs_previous_gen)
+#plt.style.use('bmh')
+
+'''
+'''
+plt.plot([n for n in range(31)], [n for n in avg_score_vs_gen1])
+plt.xlabel('# generations completed')
+plt.ylabel('average total score when playing against first generation')
+plt.savefig('vs_1st_gen.png')
+'''
+
+'''
+new_gen = first_generation
+optimal_strats = get_current_gen_top_5(first_generation)
+previous_generation = first_generation
+win_cap_freq = []
+
+for _ in range(10):
+    new_gen = mate(optimal_strats)
+    board = Board(test_strat)
+    optimal_strats = get_current_gen_top_5(new_gen)
+    win_cap_freq.append(get_win_capture_frequency(test_strat))
+'''
