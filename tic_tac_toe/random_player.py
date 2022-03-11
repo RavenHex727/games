@@ -25,12 +25,7 @@ class RandomPlayer():
         return (desired_row, desired_column)
 
     def choose_move(self, game_state_data):
-        chosen_index = None
-
-        for state in self.strategy:
-            if state == self.get_game_state(game_state_data):
-                chosen_index = self.strategy[state]
-
+        chosen_index = self.strategy[self.get_game_state(game_state_data)]
         self.board_index_to_move(chosen_index)
 
         return self.board_index_to_move(chosen_index)
@@ -42,10 +37,10 @@ class RandomPlayer():
             if player_num == 0:
                 game_state += str(player_num)
 
-            if player_num != self.player_num:
+            elif player_num != self.player_num:
                 game_state += str(player_num)
 
-            if player_num == self.player_num:
+            elif player_num == self.player_num:
                 game_state += str(player_num)
 
         return game_state

@@ -12,7 +12,11 @@ class TicTacToe():
 
         for n in range(0, len(self.board)):
             for entry in self.board[n]:
-                self.game_state += entry
+                if entry == None:
+                    self.game_state.append(0)
+
+                else: 
+                    self.game_state.append(entry)
 
         return self.game_state
 
