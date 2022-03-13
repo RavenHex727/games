@@ -209,7 +209,7 @@ def compare_to_gen(comparison_gen, top5_strats):
 avg_score_vs_gen1 = []
 avg_score_vs_previous_gen = []
 
-
+'''
 current_gen = first_generation
 optimal_strats = get_current_gen_top_5(first_generation)
 avg_score_vs_gen1.append(compare_to_gen(first_generation, first_generation))
@@ -220,39 +220,30 @@ for _ in range(30):
     avg_score_vs_gen1.append(compare_to_gen(first_generation, optimal_strats))
 
 print(avg_score_vs_gen1)
-
 '''
+
 
 new_gen = first_generation
 optimal_strats = get_current_gen_top_5(first_generation)
 previous_generation = first_generation
+win_caps = []
+win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in optimal_strats]
+lost_prev = []
+win_caps.append(sum(win_cap_single)/ len(win_cap_single))
 
-for _ in range(20):
+for _ in range(99):
     new_gen = mate(optimal_strats)
     optimal_strats = get_current_gen_top_5(new_gen)
-    avg_score_vs_previous_gen.append(compare_to_gen(previous_generation, optimal_strats))
+    win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in optimal_strats]
+    win_caps.append(sum(win_cap_single)/ len(win_cap_single))
+    #avg_score_vs_previous_gen.append(compare_to_gen(previous_generation, optimal_strats))
     previous_generation = new_gen
 
-print(avg_score_vs_previous_gen)
-#plt.style.use('bmh')
+print(win_caps)
 
-'''
-'''
-plt.plot([n for n in range(31)], [n for n in avg_score_vs_gen1])
+
+plt.style.use('bmh')
+plt.plot([n for n in range(100)], [n for n in win_caps])
 plt.xlabel('# generations completed')
-plt.ylabel('average total score when playing against first generation')
-plt.savefig('vs_1st_gen.png')
-'''
-
-'''
-new_gen = first_generation
-optimal_strats = get_current_gen_top_5(first_generation)
-previous_generation = first_generation
-win_cap_freq = []
-
-for _ in range(10):
-    new_gen = mate(optimal_strats)
-    board = Board(test_strat)
-    optimal_strats = get_current_gen_top_5(new_gen)
-    win_cap_freq.append(get_win_capture_frequency(test_strat))
-'''
+plt.ylabel('avg win cap frequency of top 5 strats')
+plt.savefig('win_cap_frequency.png')
