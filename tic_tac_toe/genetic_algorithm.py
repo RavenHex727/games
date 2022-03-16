@@ -106,14 +106,61 @@ def run_match(players):
     return win_data
 
 
-def get_optimal_strategies(strategies):
+def get_sub_set(exclude_elements, space, size):
+    subset = []
+
+    while len(subset) < 3:
+        element = random.choice(space)
+
+        if element not in exclude_elements and element not in subset:
+            subset.append(element)
+
+    return subset
+
+
+def tournament_selection(strategies):
+    best_players = []
+    all_strats = strategies.copy()
+
+    while len(best_players) < 5:
+        subset = get_sub_set(best_players, all_strats, 3)
+        matches = get_all_match_ups(subset)
+        scores = {}
+
+        for player in subset:
+            scores[player] = 0
+
+        for match in matches:
+            win_data = run_match(match)
+
+            for player in match:
+                for outcome in win_data:
+                    if outcome == "Tie":
+                        scores[player] += 0
+
+                    elif outcome != player:
+                        scores[player] -= win_data[outcome]
+
+                    elif outcome == player:
+                        scores[player] += win_data[outcome]
+
+        best_player = get_top_n_strategies(scores, 1)
+        best_players.append(best_player)
+
+    return best_players
+
+
+def get_top_n_strategies(scores, n):
     strategies_arr = []
     optimal_strategies = []
 
-    for strategy in strategies:
-        strategies_arr.append((strategy, strategies[strategy]))
+    for strategy in scores:
+        strategies_arr.append((strategy, scores[strategy]))
 
-    sorted_strategies = sorted(strategies_arr, key=lambda x: x[1])[::-1][:5]
+    sorted_strategies = sorted(strategies_arr, key=lambda x: x[1])[::-1][:n]
+
+    if n == 1:
+        return sorted_strategies[0][0]
 
     for strategy in sorted_strategies:
         optimal_strategies.append(strategy[0])
@@ -206,23 +253,66 @@ def compare_to_gen(comparison_gen, top5_strats):
 
     return sum(scores) / len(scores)
 
+
+
+#print(tournament_selection(first_generation))
+
+
 avg_score_vs_gen1 = []
 avg_score_vs_previous_gen = []
 
-'''
+
 current_gen = first_generation
-optimal_strats = get_current_gen_top_5(first_generation)
+#optimal_strats = get_current_gen_top_5(first_generation)
+previous_generation = first_generation
+selected_strats = tournament_selection(current_gen)
+win_caps = []
+lost_prev = []
+win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in selected_strats]
+lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
+win_caps.append(sum(win_cap_single)/ len(win_cap_single))
+lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
 avg_score_vs_gen1.append(compare_to_gen(first_generation, first_generation))
+avg_score_vs_previous_gen.append(compare_to_gen(first_generation, first_generation))
 
-for _ in range(30):
-    current_gen = mate(optimal_strats)
-    optimal_strats = get_current_gen_top_5(current_gen)
-    avg_score_vs_gen1.append(compare_to_gen(first_generation, optimal_strats))
+for _ in range(34):
+    current_gen = mate(selected_strats)
+    #optimal_strats = get_current_gen_top_5(current_gen)
+    selected_strats = tournament_selection(current_gen)
+    win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in selected_strats]
+    lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
+    win_caps.append(sum(win_cap_single)/ len(win_cap_single))
+    lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
+    avg_score_vs_gen1.append(compare_to_gen(first_generation, selected_strats))
+    avg_score_vs_previous_gen.append(compare_to_gen(previous_generation, selected_strats))
+    previous_generation = current_gen
 
-print(avg_score_vs_gen1)
+print(avg_score_vs_gen1, '\n', avg_score_vs_previous_gen)
+plt.style.use('bmh')
+plt.plot([n for n in range(35)], [n for n in avg_score_vs_gen1])
+plt.xlabel('# generations completed')
+plt.ylabel('avg total score of tournament selected 5 strats')
+plt.savefig('vs_1st_gen.png')
+
+plt.clf()
+plt.plot([n for n in range(35)], [n for n in avg_score_vs_previous_gen])
+plt.xlabel('# generations completed')
+plt.ylabel('avg total score of tournament selected 5 strats')
+plt.savefig('vs_prev_gen.png')
+
+plt.clf()
+plt.plot([n for n in range(35)], [n for n in win_caps])
+plt.xlabel('# generations completed')
+plt.ylabel('avg loss prev freq')
+plt.savefig('loss_prevent.png')
+
+plt.clf()
+plt.plot([n for n in range(35)], [n for n in lost_prev])
+plt.xlabel('# generations completed')
+plt.ylabel('avg win cap freq')
+plt.savefig('win_caps.png')
+
 '''
-
-
 new_gen = first_generation
 optimal_strats = get_current_gen_top_5(first_generation)
 previous_generation = first_generation
@@ -245,5 +335,6 @@ print(win_caps)
 plt.style.use('bmh')
 plt.plot([n for n in range(100)], [n for n in win_caps])
 plt.xlabel('# generations completed')
-plt.ylabel('avg win cap frequency of top 5 strats')
+plt.ylabel('avg total score of tournament selected 5 strats')
 plt.savefig('win_cap_frequency.png')
+'''
