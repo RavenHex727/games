@@ -17,7 +17,4 @@ test_board = [[1, 0, 2], [2, 1, 0], [1, 1, 1]]
 
 test_arr = [n for n in range(25)]
 
-while len(test_arr) > 5:
-    largest_element = max(test_arr)
-    test_arr.remove(largest_element)
-print(test_arr)
+print(test_arr[:5])

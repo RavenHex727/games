@@ -105,11 +105,33 @@ def run_match(players):
 
     return win_data
 
+def run_matches(match_ups, players):
+    scores = {}
+
+    for player in players:
+        scores[player] = 0
+
+    for match in match_ups:
+        win_data = run_match(match)
+
+        for player in match:
+            for outcome in win_data:
+                if outcome == "Tie":
+                    scores[player] += 0
+
+                elif outcome != player:
+                    scores[player] -= win_data[outcome]
+
+                elif outcome == player:
+                    scores[player] += win_data[outcome]
+
+    return scores
+
 
 def get_sub_set(exclude_elements, space, size):
     subset = []
 
-    while len(subset) < 3:
+    while len(subset) < size:
         element = random.choice(space)
 
         if element not in exclude_elements and element not in subset:
@@ -117,32 +139,34 @@ def get_sub_set(exclude_elements, space, size):
 
     return subset
 
+def stochastic_rr(strategies, n):
+    all_matchups = get_all_match_ups(strategies)
+    total_scores = run_matches(all_matchups, strategies)
+    selected_strats = []
 
-def tournament_selection(strategies):
+    while len(selected_strats) < n/4:
+        strategies_arr = []
+        subset = get_sub_set(selected_strats, strategies, n/8)
+
+        for strategy in subset:
+            strategies_arr.append((strategy, total_scores[strategy]))
+
+        sorted_strategies = sorted(strategies_arr, key=lambda x: x[1])[::-1]
+
+        selected_strat = sorted_strategies[0][0]
+        selected_strats.append(selected_strat)
+
+    return selected_strats
+
+
+def tournament_selection_rr(strategies, n):
     best_players = []
     all_strats = strategies.copy()
 
-    while len(best_players) < 5:
-        subset = get_sub_set(best_players, all_strats, 3)
+    while len(best_players) < n / 4:
+        subset = get_sub_set(best_players, all_strats, n/8)
         matches = get_all_match_ups(subset)
-        scores = {}
-
-        for player in subset:
-            scores[player] = 0
-
-        for match in matches:
-            win_data = run_match(match)
-
-            for player in match:
-                for outcome in win_data:
-                    if outcome == "Tie":
-                        scores[player] += 0
-
-                    elif outcome != player:
-                        scores[player] -= win_data[outcome]
-
-                    elif outcome == player:
-                        scores[player] += win_data[outcome]
+        scores = run_matches(matches, subset)
 
         best_player = get_top_n_strategies(scores, 1)
         best_players.append(best_player)
@@ -157,7 +181,7 @@ def get_top_n_strategies(scores, n):
     for strategy in scores:
         strategies_arr.append((strategy, scores[strategy]))
 
-    sorted_strategies = sorted(strategies_arr, key=lambda x: x[1])[::-1][:n]
+    sorted_strategies = sorted(strategies_arr, key=lambda x: x[1])[::-1][:int(n)]
 
     if n == 1:
         return sorted_strategies[0][0]
@@ -168,32 +192,39 @@ def get_top_n_strategies(scores, n):
     return optimal_strategies
 
 
-def mate(strategies):
+def gene_selection(mutation_rate, parents, state):
+    if random.randint(1, 100) < mutation_rate * 100:
+        return get_random_board_index(state)
+
+    else:
+        return random.choice([parents[0].strategy[state], parents[1].strategy[state]])
+
+
+def mate(strategies, mutation_rate, population_size):
     children = [strategy for strategy in strategies]
-    pairings = get_all_match_ups(strategies)
-    base_strat = {}
 
-    for state in all_game_states:
-        base_strat[state] = None
+    while len(children) < population_size:
+        parents = []
 
-    for parents in pairings:
+        while len(parents) < 2:
+            parent = random.choice(strategies)
+            
+            if parent not in parents:
+                parents.append(parent)
+
         child1 = {}
-        child2 = {}
 
         for state in all_game_states:
-
-            child1[state] = random.choice([parents[0].strategy[state], parents[1].strategy[state]])
-            child2[state] = random.choice([parents[0].strategy[state], parents[1].strategy[state]])
+            child1[state] = gene_selection(mutation_rate, parents, state)
 
         children.append(RandomPlayer(child1))
-        children.append(RandomPlayer(child2))
 
     return children
 
 
 first_generation = []
 
-for n in range(25):
+for n in range(32):
     strategy = {}
 
     for state in all_game_states:
@@ -202,40 +233,21 @@ for n in range(25):
     first_generation.append(RandomPlayer(strategy))
 
 
-def get_current_gen_top_5(current_gen):
-    total_scores = {}
+def hard_cutoff_rr(current_gen, n):
     all_matchups = get_all_match_ups(current_gen)
+    total_scores = run_matches(all_matchups, current_gen)
+    optimal_strategies = get_top_n_strategies(total_scores, n/4)
 
-    for player in current_gen:
-        total_scores[player] = 0
-
-    for matchup in all_matchups:
-        win_data = run_match(matchup)
-
-        for player in matchup:
-            for outcome in win_data:
-                if outcome == "Tie":
-                    total_scores[player] += 0
-
-                elif outcome != player:
-                    total_scores[player] -= win_data[outcome]
-
-                elif outcome == player:
-                    total_scores[player] += win_data[outcome]
-
-    optimal_strategies = get_optimal_strategies(total_scores)
-
-    #next_generation = mate(optimal_strategies)
     return optimal_strategies
 
 
-def compare_to_gen(comparison_gen, top5_strats):
+def compare_to_gen(comparison_gen, top_strats):
     total_scores = {}
 
-    for player in top5_strats:
+    for player in top_strats:
         total_scores[player] = 0
 
-    for strat in top5_strats:
+    for strat in top_strats:
         for old_strat in comparison_gen:
             win_data = run_match([strat, old_strat])
 
@@ -254,40 +266,61 @@ def compare_to_gen(comparison_gen, top5_strats):
     return sum(scores) / len(scores)
 
 
+def run(selection_method, fitness_score, mutation_rate, n):
+    avg_score_vs_gen1 = []
+    avg_score_vs_previous_gen = []
+    selected_strats = None
 
-#print(tournament_selection(first_generation))
+    current_gen = first_generation
+
+    previous_generation = first_generation
+
+    if selection_method == "hard cutoff" and fitness_score == "round robin":
+        selected_strats = hard_cutoff_rr(current_gen, n)
+
+    if selection_method == "tournament" and fitness_score == "round robin":
+        selected_strats = tournament_selection_rr(current_gen, n)
+
+    if selection_method == "stochastic" and fitness_score == "round robin":
+        selected_strats = stochastic_rr(current_gen, n)
+
+    win_caps = []
+    lost_prev = []
+    #win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in selected_strats]
+    #lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
+    #win_caps.append(sum(win_cap_single)/ len(win_cap_single))
+    #lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
+    avg_score_vs_gen1.append(compare_to_gen(first_generation, first_generation))
+    #avg_score_vs_previous_gen.append(compare_to_gen(first_generation, first_generation))
+
+    for _ in range(24):
+        current_gen = mate(selected_strats, mutation_rate, n)
+
+        if selection_method == "hard cutoff" and fitness_score == "round robin":
+            selected_strats = hard_cutoff_rr(current_gen, n)
+
+        if selection_method == "tournament" and fitness_score == "round robin":
+            selected_strats = tournament_selection_rr(current_gen, n)
+
+        if selection_method == "stochastic" and fitness_score == "round robin":
+            selected_strats = stochastic_rr(current_gen, n)
+
+        #win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in selected_strats]
+        #lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
+        #win_caps.append(sum(win_cap_single)/ len(win_cap_single))
+        #lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
+        avg_score_vs_gen1.append(compare_to_gen(first_generation, selected_strats))
+        #avg_score_vs_previous_gen.append(compare_to_gen(previous_generation, selected_strats))
+        previous_generation = current_gen
+
+    return avg_score_vs_gen1
+    #{"Vs 1st Gen": avg_score_vs_gen1, "Vs Prev Gen": avg_score_vs_previous_gen, "Win Caps": win_caps, "Loss Prevs": lost_prev}
 
 
-avg_score_vs_gen1 = []
-avg_score_vs_previous_gen = []
-
-
-current_gen = first_generation
-#optimal_strats = get_current_gen_top_5(first_generation)
-previous_generation = first_generation
-selected_strats = tournament_selection(current_gen)
-win_caps = []
-lost_prev = []
-win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in selected_strats]
-lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
-win_caps.append(sum(win_cap_single)/ len(win_cap_single))
-lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
-avg_score_vs_gen1.append(compare_to_gen(first_generation, first_generation))
-avg_score_vs_previous_gen.append(compare_to_gen(first_generation, first_generation))
-
-for _ in range(34):
-    current_gen = mate(selected_strats)
-    #optimal_strats = get_current_gen_top_5(current_gen)
-    selected_strats = tournament_selection(current_gen)
-    win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in selected_strats]
-    lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
-    win_caps.append(sum(win_cap_single)/ len(win_cap_single))
-    lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
-    avg_score_vs_gen1.append(compare_to_gen(first_generation, selected_strats))
-    avg_score_vs_previous_gen.append(compare_to_gen(previous_generation, selected_strats))
-    previous_generation = current_gen
-
-print(avg_score_vs_gen1, '\n', avg_score_vs_previous_gen)
+start_time = time.time()
+print(run('stochastic', 'round robin', 0.001, 32))
+print(time.time() - start_time)
+'''
 plt.style.use('bmh')
 plt.plot([n for n in range(35)], [n for n in avg_score_vs_gen1])
 plt.xlabel('# generations completed')
@@ -311,30 +344,4 @@ plt.plot([n for n in range(35)], [n for n in lost_prev])
 plt.xlabel('# generations completed')
 plt.ylabel('avg win cap freq')
 plt.savefig('win_caps.png')
-
-'''
-new_gen = first_generation
-optimal_strats = get_current_gen_top_5(first_generation)
-previous_generation = first_generation
-win_caps = []
-win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in optimal_strats]
-lost_prev = []
-win_caps.append(sum(win_cap_single)/ len(win_cap_single))
-
-for _ in range(99):
-    new_gen = mate(optimal_strats)
-    optimal_strats = get_current_gen_top_5(new_gen)
-    win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in optimal_strats]
-    win_caps.append(sum(win_cap_single)/ len(win_cap_single))
-    #avg_score_vs_previous_gen.append(compare_to_gen(previous_generation, optimal_strats))
-    previous_generation = new_gen
-
-print(win_caps)
-
-
-plt.style.use('bmh')
-plt.plot([n for n in range(100)], [n for n in win_caps])
-plt.xlabel('# generations completed')
-plt.ylabel('avg total score of tournament selected 5 strats')
-plt.savefig('win_cap_frequency.png')
 '''

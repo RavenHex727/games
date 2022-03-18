@@ -81,6 +81,9 @@ def get_win_capture_frequency(strategy):
     for state in strategy:
         board = make_board_from_state(state)
 
+        if check_for_winner(board) == None:
+            continue
+
         sum_rows = [sum(row) for row in get_rows(board) if 2 not in row]
         sum_columns = [sum(column) for column in get_columns(board) if 2 not in column]
         sum_diagonals = [sum(diagonals) for diagonals in get_diagonals(board) if 2 not in diagonals]
@@ -89,7 +92,6 @@ def get_win_capture_frequency(strategy):
             can_win += 1
 
         move = strategy[state]
-        winner = check_for_winner(board)
 
         if move < 3:
             board[0][move] = strategy[state]
@@ -113,6 +115,9 @@ def get_loss_prevention_frequency(strategy):
     for state in strategy:
         board = make_board_from_state(state)
 
+        if check_for_winner(board) == None:
+            continue
+
         sum_rows = [sum(row) for row in get_rows(board) if 1 not in row]
         sum_columns = [sum(column) for column in get_columns(board) if 1 not in column]
         sum_diagonals = [sum(diagonals) for diagonals in get_diagonals(board) if 1 not in diagonals]
@@ -121,7 +126,6 @@ def get_loss_prevention_frequency(strategy):
             can_lose += 1
 
         move = strategy[state]
-        winner = check_for_winner(board)
 
         if move < 3:
             board[0][move] = strategy[state]
