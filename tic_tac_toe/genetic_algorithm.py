@@ -76,6 +76,22 @@ def get_all_match_ups(players):
     return all_matchups
 
 
+def run_tourney_match(players):
+    game = TicTacToe(players)
+    game.run_to_completion()
+    winner = None
+
+    if game.winner == 1:
+        winner = players[0]
+    
+    elif game.winner == 2:
+        winner = players[1]
+    
+    elif game.winner == "Tie":
+        winner = None
+
+    return winner
+
 def run_match(players):
     win_data = {players[0]: 0, players[1]: 0, "Tie": 0}
 
@@ -233,6 +249,76 @@ for n in range(32):
     first_generation.append(RandomPlayer(strategy))
 
 
+def run_bracket(strategies):
+    scores = {}
+    random.shuffle(strategies)
+
+    for strat in strategies:
+        scores[strat] = 1
+
+    current_round = strategies
+
+    while len(current_round) > 0:
+        next_round = []
+
+        for n in range(0, int(len(current_round)) - 1, 2):
+            matchup = [current_round[n], current_round[n + 1]]
+
+            winner = run_tourney_match(matchup)
+
+            if winner == None:
+                winner = random.choice(matchup)
+
+            scores[winner] += 1
+            next_round.append(winner)
+
+        random.shuffle(next_round)
+
+        current_round = next_round
+        next_round = []
+
+    return scores
+
+
+def hardcutoff_bracket(current_gen, n):
+    scores = run_bracket(current_gen)
+    optimal_strategies = get_top_n_strategies(scores, n/4)
+    return optimal_strategies
+
+
+def stochastic_bracket(strategies, n):
+    scores = run_bracket(strategies)
+    selected_strats = []
+
+    while len(selected_strats) < n/4:
+        strategies_arr = []
+        subset = get_sub_set(selected_strats, strategies, n/8)
+
+        for strategy in subset:
+            strategies_arr.append((strategy, scores[strategy]))
+
+        sorted_strategies = sorted(strategies_arr, key=lambda x: x[1])[::-1]
+
+        selected_strat = sorted_strategies[0][0]
+        selected_strats.append(selected_strat)
+
+    return selected_strats
+
+
+def tournament_bracket(strategies, n):
+    best_players = []
+    all_strats = strategies.copy()
+
+    while len(best_players) < n / 4:
+        subset = get_sub_set(best_players, all_strats, n/8)
+        scores = run_bracket(subset)
+
+        best_player = get_top_n_strategies(scores, 1)
+        best_players.append(best_player)
+
+    return best_players
+
+
 def hard_cutoff_rr(current_gen, n):
     all_matchups = get_all_match_ups(current_gen)
     total_scores = run_matches(all_matchups, current_gen)
@@ -284,13 +370,22 @@ def run(selection_method, fitness_score, mutation_rate, n):
     if selection_method == "stochastic" and fitness_score == "round robin":
         selected_strats = stochastic_rr(current_gen, n)
 
+    if selection_method == "tournament" and fitness_score == "bracket":
+        selected_strats = tournament_bracket(current_gen, n)
+
+    if selection_method == "stochastic" and fitness_score == "bracket":
+        selected_strats = stochastic_bracket(current_gen, n)
+
+    if selection_method == "hard cutoff" and fitness_score == "bracket":
+        selected_strats = hardcutoff_bracket(current_gen, n)
+
     win_caps = []
     lost_prev = []
     #win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in selected_strats]
-    #lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
+    lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
     #win_caps.append(sum(win_cap_single)/ len(win_cap_single))
-    #lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
-    avg_score_vs_gen1.append(compare_to_gen(first_generation, first_generation))
+    lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
+    #avg_score_vs_gen1.append(compare_to_gen(first_generation, first_generation))
     #avg_score_vs_previous_gen.append(compare_to_gen(first_generation, first_generation))
 
     for _ in range(24):
@@ -305,28 +400,46 @@ def run(selection_method, fitness_score, mutation_rate, n):
         if selection_method == "stochastic" and fitness_score == "round robin":
             selected_strats = stochastic_rr(current_gen, n)
 
+        if selection_method == "tournament" and fitness_score == "bracket":
+            selected_strats = tournament_bracket(current_gen, n)
+
+        if selection_method == "stochastic" and fitness_score == "bracket":
+            selected_strats = stochastic_bracket(current_gen, n)
+
+        if selection_method == "hard cutoff" and fitness_score == "bracket":
+            selected_strats = hardcutoff_bracket(current_gen, n)
+
         #win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in selected_strats]
-        #lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
+        lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
         #win_caps.append(sum(win_cap_single)/ len(win_cap_single))
-        #lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
-        avg_score_vs_gen1.append(compare_to_gen(first_generation, selected_strats))
+        lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
+        #avg_score_vs_gen1.append(compare_to_gen(first_generation, selected_strats))
         #avg_score_vs_previous_gen.append(compare_to_gen(previous_generation, selected_strats))
         previous_generation = current_gen
 
-    return avg_score_vs_gen1
+    return lost_prev
     #{"Vs 1st Gen": avg_score_vs_gen1, "Vs Prev Gen": avg_score_vs_previous_gen, "Win Caps": win_caps, "Loss Prevs": lost_prev}
 
 
 start_time = time.time()
-print(run('stochastic', 'round robin', 0.001, 32))
-print(time.time() - start_time)
-'''
 plt.style.use('bmh')
-plt.plot([n for n in range(35)], [n for n in avg_score_vs_gen1])
+plt.plot([n for n in range(25)], [n for n in run("hard cutoff", "round robin", 0.001, 32)], label="hard cutoff round robin")
+plt.plot([n for n in range(25)], [n for n in run("tournament", "round robin", 0.001, 32)], label="tournament round robin")
+plt.plot([n for n in range(25)], [n for n in run("stochastic", "round robin", 0.001, 32)], label="stochastic round robin")
+plt.plot([n for n in range(25)], [n for n in run("hard cutoff", "bracket", 0.001, 32)], label="hard cutoff bracket")
+plt.plot([n for n in range(25)], [n for n in run("tournament", "bracket", 0.001, 32)], label="tournament bracket")
+plt.plot([n for n in range(25)], [n for n in run("stochastic", "bracket", 0.001, 32)], label="stochastic bracket")
 plt.xlabel('# generations completed')
-plt.ylabel('avg total score of tournament selected 5 strats')
-plt.savefig('vs_1st_gen.png')
+plt.ylabel('avg lost_prev frequencies')
+plt.legend(loc="best")
+plt.savefig('lost_prev.png')
 
+print(time.time() - start_time)
+
+
+
+
+'''
 plt.clf()
 plt.plot([n for n in range(35)], [n for n in avg_score_vs_previous_gen])
 plt.xlabel('# generations completed')
