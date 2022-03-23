@@ -238,15 +238,18 @@ def mate(strategies, mutation_rate, population_size):
     return children
 
 
-first_generation = []
+def make_first_gen(pop_size):
+    first_generation = []
 
-for n in range(32):
-    strategy = {}
+    for n in range(pop_size):
+        strategy = {}
 
-    for state in all_game_states:
-        strategy[state] = get_random_board_index(state)
+        for state in all_game_states:
+            strategy[state] = get_random_board_index(state)
 
-    first_generation.append(RandomPlayer(strategy))
+        first_generation.append(RandomPlayer(strategy))
+
+    return first_generation
 
 
 def run_bracket(strategies):
@@ -356,6 +359,7 @@ def run(selection_method, fitness_score, mutation_rate, n):
     avg_score_vs_gen1 = []
     avg_score_vs_previous_gen = []
     selected_strats = None
+    first_generation = make_first_gen(n)
 
     current_gen = first_generation
 
@@ -382,9 +386,9 @@ def run(selection_method, fitness_score, mutation_rate, n):
     win_caps = []
     lost_prev = []
     #win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in selected_strats]
-    lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
+    #lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
     #win_caps.append(sum(win_cap_single)/ len(win_cap_single))
-    lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
+    #lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
     #avg_score_vs_gen1.append(compare_to_gen(first_generation, first_generation))
     #avg_score_vs_previous_gen.append(compare_to_gen(first_generation, first_generation))
 
@@ -410,19 +414,21 @@ def run(selection_method, fitness_score, mutation_rate, n):
             selected_strats = hardcutoff_bracket(current_gen, n)
 
         #win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in selected_strats]
-        lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
+        #lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
         #win_caps.append(sum(win_cap_single)/ len(win_cap_single))
-        lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
+        #lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
         #avg_score_vs_gen1.append(compare_to_gen(first_generation, selected_strats))
         #avg_score_vs_previous_gen.append(compare_to_gen(previous_generation, selected_strats))
         previous_generation = current_gen
 
-    return lost_prev
+    return current_gen
     #{"Vs 1st Gen": avg_score_vs_gen1, "Vs Prev Gen": avg_score_vs_previous_gen, "Win Caps": win_caps, "Loss Prevs": lost_prev}
 
 
 start_time = time.time()
+'''
 plt.style.use('bmh')
+
 plt.plot([n for n in range(25)], [n for n in run("hard cutoff", "round robin", 0.001, 32)], label="hard cutoff round robin")
 plt.plot([n for n in range(25)], [n for n in run("tournament", "round robin", 0.001, 32)], label="tournament round robin")
 plt.plot([n for n in range(25)], [n for n in run("stochastic", "round robin", 0.001, 32)], label="stochastic round robin")
@@ -436,25 +442,18 @@ plt.savefig('lost_prev.png')
 
 print(time.time() - start_time)
 
-
-
-
 '''
-plt.clf()
-plt.plot([n for n in range(35)], [n for n in avg_score_vs_previous_gen])
-plt.xlabel('# generations completed')
-plt.ylabel('avg total score of tournament selected 5 strats')
-plt.savefig('vs_prev_gen.png')
 
-plt.clf()
-plt.plot([n for n in range(35)], [n for n in win_caps])
-plt.xlabel('# generations completed')
-plt.ylabel('avg loss prev freq')
-plt.savefig('loss_prevent.png')
+data = [{"population size": 64, "mutation rate": 0.001}, 
+        {"population size": 64, "mutation rate": 0.01}, 
+        {"population size": 256, "mutation rate": 0.001}, 
+        {"population size": 256, "mutation rate": 0.01}, 
+        {"population size": 1024, "mutation rate": 0.001}, 
+        {"population size": 1024, "mutation rate": 0.01}]
 
-plt.clf()
-plt.plot([n for n in range(35)], [n for n in lost_prev])
-plt.xlabel('# generations completed')
-plt.ylabel('avg win cap freq')
-plt.savefig('win_caps.png')
-'''
+start_time = time.time()
+
+for data_dict in data:
+    print(len(run("stochastic", "bracket", data_dict["mutation rate"], data_dict["population size"])))
+
+print(time.time() - start_time)
