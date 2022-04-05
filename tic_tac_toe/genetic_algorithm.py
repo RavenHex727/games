@@ -355,6 +355,29 @@ def compare_to_gen(comparison_gen, top_strats):
     return sum(scores) / len(scores)
 
 
+def win_percent(comparison_gen, current_gen):
+    wins = 0
+
+    for _ in range(50):
+        match = [random.choice(current_gen), random.choice(comparison_gen)]
+        game = TicTacToe(match)
+        game.run_to_completion()
+
+        if game.winner == 1:
+            wins += 1
+
+    return wins / 50
+
+
+def get_50_strats(collection):
+    strats = []
+
+    for _ in range(50):
+        strats.append(random.choice(collection))
+
+    return strats
+
+
 def run(selection_method, fitness_score, mutation_rate, n):
     avg_score_vs_gen1 = []
     avg_score_vs_previous_gen = []
@@ -385,14 +408,18 @@ def run(selection_method, fitness_score, mutation_rate, n):
 
     win_caps = []
     lost_prev = []
-    #win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in selected_strats]
-    #lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
+    #win_percents = [win_percent(previous_generation, current_gen)]
+
+    randomly_selected_strats = get_50_strats(current_gen)
+    
+    #win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in randomly_selected_strats]
+    lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in randomly_selected_strats]
     #win_caps.append(sum(win_cap_single)/ len(win_cap_single))
-    #lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
+    lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
     #avg_score_vs_gen1.append(compare_to_gen(first_generation, first_generation))
     #avg_score_vs_previous_gen.append(compare_to_gen(first_generation, first_generation))
 
-    for _ in range(24):
+    for num in range(24):
         current_gen = mate(selected_strats, mutation_rate, n)
 
         if selection_method == "hard cutoff" and fitness_score == "round robin":
@@ -413,19 +440,20 @@ def run(selection_method, fitness_score, mutation_rate, n):
         if selection_method == "hard cutoff" and fitness_score == "bracket":
             selected_strats = hardcutoff_bracket(current_gen, n)
 
-        #win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in selected_strats]
-        #lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in selected_strats]
+        randomly_selected_strats = get_50_strats(current_gen)
+        #win_cap_single = [get_win_capture_frequency(strat.strategy) for strat in randomly_selected_strats]
+        lost_prev_single = [get_loss_prevention_frequency(strat.strategy) for strat in randomly_selected_strats]
         #win_caps.append(sum(win_cap_single)/ len(win_cap_single))
-        #lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
+        lost_prev.append(sum(lost_prev_single) / len(lost_prev_single))
         #avg_score_vs_gen1.append(compare_to_gen(first_generation, selected_strats))
         #avg_score_vs_previous_gen.append(compare_to_gen(previous_generation, selected_strats))
+        #win_percents.append(win_percent(previous_generation, selected_strats))
+        print("Gen:", num, "\n")
         previous_generation = current_gen
 
-    return current_gen
+    return lost_prev
     #{"Vs 1st Gen": avg_score_vs_gen1, "Vs Prev Gen": avg_score_vs_previous_gen, "Win Caps": win_caps, "Loss Prevs": lost_prev}
 
-
-start_time = time.time()
 '''
 plt.style.use('bmh')
 
@@ -443,7 +471,7 @@ plt.savefig('lost_prev.png')
 print(time.time() - start_time)
 
 '''
-
+#8, 16, 32
 data = [{"population size": 64, "mutation rate": 0.001}, 
         {"population size": 64, "mutation rate": 0.01}, 
         {"population size": 256, "mutation rate": 0.001}, 
@@ -453,7 +481,22 @@ data = [{"population size": 64, "mutation rate": 0.001},
 
 start_time = time.time()
 
+plots = []
+
+
 for data_dict in data:
-    print(len(run("stochastic", "bracket", data_dict["mutation rate"], data_dict["population size"])))
+    plots.append(run("stochastic", "bracket", data_dict["mutation rate"], data_dict["population size"]))
+
+plt.style.use('bmh')
+plt.plot([n for n in range(25)], [n for n in plots[0]], label="p=8, m_rate=0.001")
+plt.plot([n for n in range(25)], [n for n in plots[1]], label="p=8, m_rate=0.01")
+plt.plot([n for n in range(25)], [n for n in plots[2]], label="p=16, m_rate=0.001")
+plt.plot([n for n in range(25)], [n for n in plots[3]], label="p=16, m_rate=0.01")
+plt.plot([n for n in range(25)], [n for n in plots[4]], label="p=32, m_rate=0.001")
+plt.plot([n for n in range(25)], [n for n in plots[5]], label="p=32, m_rate=0.01")
+plt.xlabel('# generations completed')
+plt.ylabel('lose prev freqs')
+plt.legend(loc="best")
+plt.savefig('stochastic_bracket_lose_prevs.png')
 
 print(time.time() - start_time)
