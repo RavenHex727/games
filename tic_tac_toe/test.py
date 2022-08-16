@@ -43,6 +43,7 @@ print("1000 games:", win_data)
 
 '''
 
+'''
 all_possible_game_states = []
 
 def get_random_game_state():
@@ -66,3 +67,10 @@ for _ in range(10):
     game = TicTacToe([RandomPlayer(), RandomPlayer()])
     game.run_to_completion()
     print(game.winner)
+
+'''
+
+players = [RandomPlayer(), RandomPlayer()]
+game = TicTacToe(players)
+game.run_to_completion()
+print(game.winner)
