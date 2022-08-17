@@ -2,6 +2,7 @@ import sys
 sys.path.append('tic_tac_toe')
 from game import *
 from random_player import *
+from minimax_player import *
 
 '''
 alternate = False
@@ -70,7 +71,8 @@ for _ in range(10):
 
 '''
 
-players = [RandomPlayer(), RandomPlayer()]
+players = [MiniMaxPlayer(game_tree), RandomPlayer()]
 game = TicTacToe(players)
 game.run_to_completion()
 print(game.winner)
+

@@ -2,13 +2,12 @@ import copy
 import time
 
 class Node():
-    def __init__(self, state, turn, value=None):
+    def __init__(self, state, turn):
         self.state = state
         self.turn = turn
         self.winner = self.check_for_winner()
         self.previous = None
         self.children = None
-        self.value = value
 
     def get_rows(self):
         return [row for row in self.state]
@@ -58,10 +57,7 @@ class Node():
 class GameTree():
     def __init__(self, root_node):
         self.current_nodes = [Node(root_node, 1)]
-        self.num_terminal_nodes = 0
-        self.terminal_nodes = []
-        self.nodes_dict = {}
-        self.nodes_dict[str(self.current_nodes[0].state)] = self.current_nodes[0]
+        self.terminal_nodes = 0
 
     def get_free_locations(self, node):
         available_locs = []
@@ -83,16 +79,9 @@ class GameTree():
         for translation in possible_translations:
             initial_state = copy.deepcopy(node.state)
             initial_state[translation[0]][translation[1]] = node.turn
-
-            if str(initial_state) in list(self.nodes_dict.keys()):
-                children.append(self.nodes_dict[str(initial_state)])
-                self.nodes_dict[str(initial_state)].previous.append(node)
-
-            else:
-                child = Node(initial_state, 3 - node.turn)
-                self.nodes_dict[str(child.state)] = child
-                child.previous = [node]
-                children.append(child)
+            child = Node(initial_state, 3 - node.turn)
+            child.previous = node
+            children.append(child)
 
         node.children = children
 
@@ -106,20 +95,17 @@ class GameTree():
             self.create_children(node)
 
             if node.children != None:
-                for child in node.children:
-                    if child not in children:
-                        children.append(child)
+                children += node.children
 
             else:
-                self.num_terminal_nodes += 1
-                self.terminal_nodes.append(node)
+                self.terminal_nodes += 1
 
         self.current_nodes = children
         self.build_tree()
 
-
 start_time = time.time()
-
 root_state = [[None, None, None], [None, None, None], [None, None, None]]
-game_tree = GameTree(root_state)
-game_tree.build_tree()
+game = GameTree(root_state)
+game.build_tree()
+print(game.terminal_nodes)
+print(time.time() - start_time)
