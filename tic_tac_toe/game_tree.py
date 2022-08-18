@@ -5,9 +5,9 @@ class Node():
     def __init__(self, state, turn, player_num):
         self.state = state
         self.turn = turn
+        self.player_num = player_num
         self.winner = self.check_for_winner()
         self.previous = []
-        self.player_num = player_num
         self.children = []
         self.value = None
 
@@ -67,13 +67,13 @@ class Node():
     def set_node_value(self):
         if self.children == None or len(self.children) == 0:
             if self.winner == self.player_num:
-                self.score = 1
+                self.value = 1
 
             elif self.winner == 3 - self.player_num:
-                self.score = -1
+                self.value = -1
 
             elif self.winner == 'Tie':
-                self.score = 0
+                self.value = 0
 
             return
 
@@ -89,26 +89,15 @@ class GameTree():
         self.root_node = Node(root_state, 1, player_num)
         self.current_nodes = [self.root_node]
         self.num_terminal_nodes = 0
-        self.terminal_nodes = []
         self.player_num = player_num
         self.nodes_dict = {str(root_state): self.root_node}
-
-    def get_free_locations(self, node):
-        available_locs = []
-
-        for row_index in range(len(node.state)):
-            for column_index in range(len(node.state[0])):
-                if node.state[row_index][column_index] == None:
-                    available_locs.append((row_index, column_index))
-
-        return available_locs
 
     def create_children(self, node):
         if node.winner != None or len(node.children) != 0:
             return
 
         children = []
-        possible_translations = self.get_free_locations(node)
+        possible_translations = [(i,j) for i in range(len(node.state)) for j in range(len(node.state)) if node.state[i][j] == None]
 
         for translation in possible_translations:
             initial_state = copy.deepcopy(node.state)
@@ -149,6 +138,7 @@ class GameTree():
         self.build_tree()
 
 '''
+
     def get_move_from_boards(self, base_state, new_state):
         base_state_children = self.nodes_dict[str(base_state)].children
 

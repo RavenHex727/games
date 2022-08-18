@@ -8,7 +8,6 @@ class MiniMaxPlayer:
     def __init__(self):
         self.symbol = None
         self.number = None
-        self.game_tree = None
   
     def set_player_symbol(self, n):
         self.symbol = n
@@ -16,16 +15,13 @@ class MiniMaxPlayer:
     def set_player_number(self, n):
         self.number = n
         root_state = [[None, None, None], [None, None, None], [None, None, None]]
-        self.game_tree = GameTree(root_state, 1)
+        self.game_tree = GameTree(root_state, self.number)
         self.game_tree.build_tree()
         self.game_tree.set_node_values()
 
-    def get_possible_moves(self, board):
-        possible_moves = [(i,j) for i in range(3) for j in range(3) if board[i][j] == None]
-        return possible_moves
 
     def choose_move(self, game_board):
-        choices = self.get_possible_moves(game_board)
+        choices = [(i,j) for i in range(3) for j in range(3) if game_board[i][j] == None]
         current_node = self.game_tree.nodes_dict[str(game_board)]
         #print("Choices", choices)
 
@@ -34,6 +30,8 @@ class MiniMaxPlayer:
 
         for child in current_node.children:
             debug_info[str(child.state)] = child.value
+
+        print(debug_info)
 
         for child in current_node.children:
             if child.value > max_value_node.value:
@@ -46,7 +44,6 @@ class MiniMaxPlayer:
             if new_board == max_value_node.state:
                 print("Choice", choice)
                 return choice
-
 
 '''
     def get_move_from_boards(self, base_state, new_state):

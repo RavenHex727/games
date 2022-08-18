@@ -1,7 +1,4 @@
-import random
-import math
-
-class RandomPlayer:
+class TestPlayer:
     def __init__(self):
         self.symbol = None
         self.number = None
@@ -17,5 +14,13 @@ class RandomPlayer:
         return possible_moves
     
     def choose_move(self, game_board):
-        choices = [(i,j) for i in range(len(game_board)) for j in range(len(game_board)) if game_board[i][j]==None]
-        return random.choice(choices)
+        choices = [(i,j) for i in range(len(game_board)) for j in range(len(game_board)) if game_board[i][j] == None]
+        top_left = choices[0]
+        min_val = choices[0][0] + choices[0][1]
+
+        for choice in choices[1:]:
+            if choice[0] + choice[1] < min_val:
+                top_left = choice
+                min_val = choice[0] + choice[1]
+
+        return top_left

@@ -3,6 +3,7 @@ sys.path.append('tic_tac_toe')
 from game import *
 from random_player import *
 from minimax_player import *
+from top_left import *
 
 '''
 alternate = False

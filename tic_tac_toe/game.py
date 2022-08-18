@@ -41,7 +41,6 @@ class TicTacToe:
 
         return board_copy
 
-
     def complete_round(self):
         for player in self.players:
             player_move = player.choose_move(self.player_num_board())
