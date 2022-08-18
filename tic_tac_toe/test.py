@@ -2,6 +2,7 @@ import sys
 sys.path.append('tic_tac_toe')
 from game import *
 from random_player import *
+from input_player import *
 from minimax_player import *
 from top_left import *
 
@@ -93,7 +94,7 @@ for _ in range(10):
 print(win_data)
 '''
 
-players = [TestPlayer(), MiniMaxPlayer()]
+players = [InputPlayer(), MiniMaxPlayer()]
 game = TicTacToe(players)
 game.run_to_completion()
 print(game.winner)

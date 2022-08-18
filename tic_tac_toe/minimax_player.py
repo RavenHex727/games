@@ -31,7 +31,7 @@ class MiniMaxPlayer:
         for child in current_node.children:
             debug_info[str(child.state)] = child.value
 
-        print(debug_info)
+        #print(debug_info)
 
         for child in current_node.children:
             if child.value > max_value_node.value:
@@ -47,7 +47,7 @@ class MiniMaxPlayer:
                 optimal_choices.append(choice)
         
         choice = random.choice(optimal_choices)
-        print("Choice:", choice)
+        #print("Choice:", choice)
         return choice
 
 '''
