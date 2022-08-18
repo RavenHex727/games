@@ -137,8 +137,6 @@ class GameTree():
         self.current_nodes = children
         self.build_tree()
 
-'''
-
     def get_move_from_boards(self, base_state, new_state):
         base_state_children = self.nodes_dict[str(base_state)].children
 
@@ -156,4 +154,3 @@ class GameTree():
         best_move_node = self.root_node.children[max_index]
         new_state = best_move_node.state
         return self.get_move_from_boards(base_state, new_state)
-'''

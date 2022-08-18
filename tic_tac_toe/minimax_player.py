@@ -1,4 +1,4 @@
-from random import random
+import random
 import math
 import sys
 sys.path.append('tic_tac_toe')
@@ -37,13 +37,18 @@ class MiniMaxPlayer:
             if child.value > max_value_node.value:
                 max_value_node = child
 
+        optimal_choices = []
+
         for choice in choices:
             new_board = copy.deepcopy(game_board)
             new_board[choice[0]][choice[1]] = self.number
 
             if new_board == max_value_node.state:
-                print("Choice", choice)
-                return choice
+                optimal_choices.append(choice)
+        
+        choice = random.choice(optimal_choices)
+        print("Choice:", choice)
+        return choice
 
 '''
     def get_move_from_boards(self, base_state, new_state):

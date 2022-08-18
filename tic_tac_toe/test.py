@@ -93,7 +93,7 @@ for _ in range(10):
 print(win_data)
 '''
 
-players = [MiniMaxPlayer(), TestPlayer()]
+players = [TestPlayer(), MiniMaxPlayer()]
 game = TicTacToe(players)
 game.run_to_completion()
 print(game.winner)
