@@ -5,48 +5,66 @@ sys.path.append('tic_tac_toe')
 from game_tree import *
 
 class MiniMaxPlayer:
-    def __init__(self, game_tree):
+    def __init__(self):
         self.symbol = None
         self.number = None
-        self.game_tree = game_tree
+        self.game_tree = None
   
     def set_player_symbol(self, n):
         self.symbol = n
   
     def set_player_number(self, n):
         self.number = n
+        root_state = [[None, None, None], [None, None, None], [None, None, None]]
+        self.game_tree = GameTree(root_state, 1)
+        self.game_tree.build_tree()
+        self.game_tree.set_node_values()
 
-    def set_node_values(self):
-        current_nodes = []
+    def get_possible_moves(self, board):
+        possible_moves = [(i,j) for i in range(3) for j in range(3) if board[i][j] == None]
+        return possible_moves
 
-        for node in game_tree.terminal_nodes:
-            if node.winner == self.number:
-                node.value = 1
+    def choose_move(self, game_board):
+        choices = self.get_possible_moves(game_board)
+        current_node = self.game_tree.nodes_dict[str(game_board)]
+        #print("Choices", choices)
 
-            if node.winner != self.number and node.winner != "Tie":
-                node.value = -1
+        max_value_node = current_node.children[0]
+        debug_info = {}
 
-            if node.winner == "Tie":
-                node.value = 0
+        for child in current_node.children:
+            debug_info[str(child.state)] = child.value
 
-            current_nodes += node.previous
-
-        while None not in current_nodes:
-            for node in current_nodes:
-                if node.turn == self.number:
-                    node.value = max([child.value for child in node.children])
-
-                if node.turn == 3 - self.number:
-                    node.value = min([child.value for child in node.children])
-
-                current_nodes.append(node.previous)
-                current_nodes.remove(node)
-
-
-    def choose_move(self, choices):
-        self.set_node_values()
+        for child in current_node.children:
+            if child.value > max_value_node.value:
+                max_value_node = child
 
         for choice in choices:
-            if choice[choice[0]][choice[1]] = 
+            new_board = copy.deepcopy(game_board)
+            new_board[choice[0]][choice[1]] = self.number
 
-        return choices[self.best_move_index()]
+            if new_board == max_value_node.state:
+                print("Choice", choice)
+                return choice
+
+
+'''
+    def get_move_from_boards(self, base_state, new_state):
+        base_state_children = self.game_tree.nodes_dict[str(base_state)].children
+
+        for i in range(len(new_state)):
+            for j in range(len(new_state[0])):
+                base = base_state[i][j]
+                new = new_state[i][j]
+                if base != new:
+                    return (i, j)
+
+    def choose_move(self, game_board):
+        base_state = self.game_tree.root_node.state
+        node_values = [node.value for node in self.game_tree.root_node.children]
+        max_value_index = node_values.index(max(node_values))
+        best_move_node = self.root_node.children[max_index]
+        new_state = best_move_node.state
+        return self.get_move_from_boards(base_state, new_state)
+'''  
+        

@@ -40,4 +40,4 @@ while len(sets) < 5:
         used_nums.append(n)
 
 
-print(len([None]))
+print([1] + [])

@@ -2,13 +2,14 @@ import copy
 import time
 
 class Node():
-    def __init__(self, state, turn, value=None):
+    def __init__(self, state, turn, player_num):
         self.state = state
         self.turn = turn
         self.winner = self.check_for_winner()
-        self.previous = None
-        self.children = None
-        self.value = value
+        self.previous = []
+        self.player_num = player_num
+        self.children = []
+        self.value = None
 
     def get_rows(self):
         return [row for row in self.state]
@@ -54,14 +55,43 @@ class Node():
 
         return None
 
+    def children_to_value(self):
+        if self.children == None or len(self.children) == 0:
+            return None
+
+        for child in self.children:
+            child.set_node_value()
+
+        return [child.value for child in self.children]
+
+    def set_node_value(self):
+        if self.children == None or len(self.children) == 0:
+            if self.winner == self.player_num:
+                self.score = 1
+
+            elif self.winner == 3 - self.player_num:
+                self.score = -1
+
+            elif self.winner == 'Tie':
+                self.score = 0
+
+            return
+
+        if self.turn == self.player_num:
+            self.value = max(self.children_to_value())
+
+        elif self.turn == 3 - self.player_num:
+            self.value = min(self.children_to_value())
+
 
 class GameTree():
-    def __init__(self, root_node):
-        self.current_nodes = [Node(root_node, 1)]
+    def __init__(self, root_state, player_num):
+        self.root_node = Node(root_state, 1, player_num)
+        self.current_nodes = [self.root_node]
         self.num_terminal_nodes = 0
         self.terminal_nodes = []
-        self.nodes_dict = {}
-        self.nodes_dict[str(self.current_nodes[0].state)] = self.current_nodes[0]
+        self.player_num = player_num
+        self.nodes_dict = {str(root_state): self.root_node}
 
     def get_free_locations(self, node):
         available_locs = []
@@ -74,7 +104,7 @@ class GameTree():
         return available_locs
 
     def create_children(self, node):
-        if node.winner != None or node.children != None:
+        if node.winner != None or len(node.children) != 0:
             return
 
         children = []
@@ -87,17 +117,21 @@ class GameTree():
             if str(initial_state) in list(self.nodes_dict.keys()):
                 children.append(self.nodes_dict[str(initial_state)])
                 self.nodes_dict[str(initial_state)].previous.append(node)
+                continue
 
-            else:
-                child = Node(initial_state, 3 - node.turn)
-                self.nodes_dict[str(child.state)] = child
-                child.previous = [node]
-                children.append(child)
+            child = Node(initial_state, 3 - node.turn, self.player_num)
+            child.previous = [node]
+            children.append(child)
+            self.nodes_dict[str(child.state)] = child
 
         node.children = children
 
+    def set_node_values(self):
+        self.root_node.set_node_value()
+
     def build_tree(self):
         if len(self.current_nodes) == 0:
+            self.current_nodes = [self.root_node]
             return
 
         children = []
@@ -105,21 +139,31 @@ class GameTree():
         for node in self.current_nodes:
             self.create_children(node)
 
-            if node.children != None:
-                for child in node.children:
-                    if child not in children:
-                        children.append(child)
+            if len(node.children) != 0:
+                children += node.children
 
             else:
                 self.num_terminal_nodes += 1
-                self.terminal_nodes.append(node)
 
         self.current_nodes = children
         self.build_tree()
 
+'''
+    def get_move_from_boards(self, base_state, new_state):
+        base_state_children = self.nodes_dict[str(base_state)].children
 
-start_time = time.time()
-
-root_state = [[None, None, None], [None, None, None], [None, None, None]]
-game_tree = GameTree(root_state)
-game_tree.build_tree()
+        for i in range(len(new_state)):
+            for j in range(len(new_state[0])):
+                base = base_state[i][j]
+                new = new_state[i][j]
+                if base != new:
+                    return (i,j)
+    
+    def get_best_move(self):
+        base_state = self.root_node.state
+        scores = [node.value for node in self.root_node.children]
+        max_index = scores.index(max(scores))
+        best_move_node = self.root_node.children[max_index]
+        new_state = best_move_node.state
+        return self.get_move_from_boards(base_state, new_state)
+'''

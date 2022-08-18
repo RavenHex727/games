@@ -71,8 +71,28 @@ for _ in range(10):
 
 '''
 
-players = [MiniMaxPlayer(game_tree), RandomPlayer()]
+win_data = {1: 0, 2: 0, "Tie": 0}
+
+
+'''
+for _ in range(10):
+    players = [RandomPlayer(), MiniMaxPlayer()]
+    game = TicTacToe(players)
+    game.run_to_completion()
+
+    if game.winner == 1:
+        win_data[2] += 1
+
+    if game.winner == 2:
+        win_data[1] += 1
+
+    if game.winner == "Tie":
+        win_data["Tie"] += 1
+
+print(win_data)
+'''
+
+players = [MiniMaxPlayer(), TestPlayer()]
 game = TicTacToe(players)
 game.run_to_completion()
 print(game.winner)
-
