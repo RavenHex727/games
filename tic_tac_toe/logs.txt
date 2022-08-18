@@ -10,16 +10,8 @@ X|_|_
 O|O|_
 X|_|_
 
-X|O|_
-O|O|X
+X|X|_
+O|O|O
 X|_|_
 
-X|O|_
-O|O|X
-X|X|O
-
-X|O|X
-O|O|X
-X|X|O
-
-Tie
+Player 2 won

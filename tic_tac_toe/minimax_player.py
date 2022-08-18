@@ -19,7 +19,6 @@ class MiniMaxPlayer:
         self.game_tree.build_tree()
         self.game_tree.set_node_values()
 
-
     def choose_move(self, game_board):
         choices = [(i,j) for i in range(3) for j in range(3) if game_board[i][j] == None]
         current_node = self.game_tree.nodes_dict[str(game_board)]

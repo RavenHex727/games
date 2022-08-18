@@ -18,6 +18,6 @@ class InputPlayer:
     
     def choose_move(self, game_board):
         choices = [(i,j) for i in range(len(game_board)) for j in range(len(game_board)) if game_board[i][j]==None]
-        print(game_board, "\n", choices)
+        print(game_board[0], "\n", game_board[1], "\n", game_board[2], "\n", choices , "\n")
         chosen_choice = input("Choose index of choice ")
         return choices[int(chosen_choice)]

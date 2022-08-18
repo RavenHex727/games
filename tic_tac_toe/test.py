@@ -5,6 +5,7 @@ from random_player import *
 from input_player import *
 from minimax_player import *
 from top_left import *
+import time
 
 '''
 alternate = False
@@ -72,16 +73,23 @@ for _ in range(10):
     print(game.winner)
 
 '''
-
-win_data = {1: 0, 2: 0, "Tie": 0}
-
-
 '''
-for _ in range(10):
-    players = [RandomPlayer(), MiniMaxPlayer()]
+win_data = {1: 0, 2: 0, "Tie": 0}
+print("p1")
+for _ in range(25):
+    players = [MiniMaxPlayer(), RandomPlayer()]
     game = TicTacToe(players)
     game.run_to_completion()
 
+    print(game.winner)
+    win_data[game.winner] += 1
+
+print("p2")
+for _ in range(25):
+    players = [RandomPlayer(), MiniMaxPlayer()]
+    game = TicTacToe(players)
+    game.run_to_completion()
+    print(game.winner)
     if game.winner == 1:
         win_data[2] += 1
 
@@ -97,4 +105,3 @@ print(win_data)
 players = [InputPlayer(), MiniMaxPlayer()]
 game = TicTacToe(players)
 game.run_to_completion()
-print(game.winner)
