@@ -1,5 +1,6 @@
 from random import random
 from logger import *
+from reduced_depth_game_tree import *
 
 class TicTacToe:
     def __init__(self, players):
@@ -21,12 +22,6 @@ class TicTacToe:
     def set_player_numbers(self): 
         self.players[0].set_player_number(1)
         self.players[1].set_player_number(2)
-  
-    #def determine_player_order(self):
-        #rand = round(random())
-
-        #if rand == 1:
-            #self.players = self.players[::-1]
 
     def player_num_board(self):
         board_copy = [[None, None, None], [None, None, None], [None, None, None]]

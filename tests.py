@@ -1,5 +1,6 @@
 import random
 import time
+import numpy as np
 
 def get_game_state(board):
     game_state = ''
@@ -40,4 +41,45 @@ while len(sets) < 5:
         used_nums.append(n)
 
 
-print([1] + [])
+board = [[random.choice([0, 1, 2]) for _ in range(7)] for _ in range(6)]
+
+def log_board(board):
+    for i in range(len(board)):
+        row = board[i]
+        row_string = ''
+
+        for space in row:
+            if space == "0":
+                row_string += ' '
+
+            else:
+                row_string += str(space) + ' '
+
+        print(row_string[:-1])
+
+    print('\n')
+
+board = [[1, 2, 3, 4, 5, 6, 7], 
+        [8, 9, 10, 11, 12, 13, 14], 
+        [15, 16, 17, 18, 19, 20, 21], 
+        [22, 23, 24, 25, 26, 27, 28], 
+        [29, 30, 31, 32, 33, 34, 35], 
+        [36, 37, 38, 39, 40, 41, 42]]
+
+max_col = len(board[0])
+max_row = len(board)
+cols = [[] for _ in range(max_col)]
+rows = [[] for _ in range(max_row)]
+fdiag = [[] for _ in range(max_row + max_col - 1)]
+bdiag = [[] for _ in range(len(fdiag))]
+min_bdiag = -max_row + 1
+
+for x in range(max_col):
+    for y in range(max_row):
+        cols[x].append(board[y][x])
+        rows[y].append(board[y][x])
+        fdiag[x+y].append(board[y][x])
+        bdiag[x-y-min_bdiag].append(board[y][x])
+
+print([diag for diag in fdiag if len(diag) >= 4])
+print([diag for diag in bdiag if len(diag) >= 4])

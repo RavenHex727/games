@@ -3,6 +3,7 @@ sys.path.append('tic_tac_toe')
 from game import *
 from random_player import *
 from input_player import *
+from heuristic_minimax import *
 from minimax_player import *
 from top_left import *
 import time
@@ -102,6 +103,6 @@ for _ in range(25):
 print(win_data)
 '''
 
-players = [InputPlayer(), MiniMaxPlayer()]
+players = [HeuristicMiniMax(ply=9), MiniMaxPlayer()]
 game = TicTacToe(players)
 game.run_to_completion()

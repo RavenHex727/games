@@ -1,5 +1,6 @@
 import copy
 import time
+import random
 
 class Node():
     def __init__(self, state, turn, player_num):
@@ -64,18 +65,43 @@ class Node():
 
         return [child.value for child in self.children]
 
-    def set_node_value(self):
-        if self.children == None or len(self.children) == 0:
-            if self.winner == self.player_num:
-                self.value = 1
+    def heuristic_evaluation(self, game_state):
+        rows_columns_diagonals = self.get_rows() + self.get_columns() + self.get_diagonals()
 
-            elif self.winner == 3 - self.player_num:
-                self.value = -1
+        if node.player_num == 1:
+            node_symbol = "X"
+            opponent_symbol = "O"
 
-            elif self.winner == 'Tie':
-                self.value = 0
+        else:
+            node_symbol = "O"
+            opponent_symbol = "X"
 
-            return
+        if self.check_for_winner() != None:
+            if self.check_for_winner() == self.player_num:
+                return 1
+            
+            if self.check_for_winner() == 3 - self.player_num:
+                return -1
+
+            else:
+                return 0
+
+        else:
+            value = 0
+
+            for element in rows_columns_diagonals:
+                if set(element) == {node_symbol, None} and element.count(None) == 1 and node.turn == node.player_num:
+                    value += 1
+
+                if set(element) == {None, opponent_symbol} and element.count(None) == 1 and node.turn != node.player_num:
+                    value -= 1
+
+            return value / 8
+
+
+    def set_node_value(self, last_layer_nodes):
+        for node in last_layer_nodes:
+            node.value = self.heuristic_evaluation(node.state)
 
         if self.turn == self.player_num:
             self.value = max(self.children_to_value())
@@ -84,13 +110,14 @@ class Node():
             self.value = min(self.children_to_value())
 
 
-class GameTree():
-    def __init__(self, root_state, player_num):
+class ReducedSearchGameTree():
+    def __init__(self, root_state, player_num, ply):
         self.root_node = Node(root_state, 1, player_num)
         self.current_nodes = [self.root_node]
         self.num_terminal_nodes = 0
         self.player_num = player_num
         self.nodes_dict = {str(root_state): self.root_node}
+        self.ply = ply
 
     def create_children(self, node):
         if node.winner != None or len(node.children) != 0:
@@ -115,24 +142,26 @@ class GameTree():
 
         node.children = children
 
-    def set_node_values(self):
-        self.root_node.set_node_value()
+    def set_node_values(self, current_node):
+        if self.current_node.value == None:
+            self.current_node.set_node_value()
 
-    def build_tree(self):
+    def build_tree(self, current_nodes):
         if len(self.current_nodes) == 0:
-            self.current_nodes = [self.root_node]
+            self.current_nodes = current_nodes
             return
 
         children = []
 
-        for node in self.current_nodes:
-            self.create_children(node)
+        #for _ in range(self.ply):
+            for node in self.current_nodes:
+                self.create_children(node)
 
-            if len(node.children) != 0:
-                children += node.children
+                if len(node.children) != 0:
+                    children += node.children
 
-            else:
-                self.num_terminal_nodes += 1
+                else:
+                    self.num_terminal_nodes += 1
 
-        self.current_nodes = children
-        self.build_tree()
+            self.current_nodes = children
+            self.build_tree(children)

@@ -2,26 +2,27 @@ import random
 import math
 import sys
 sys.path.append('tic_tac_toe')
-from game_tree import *
+from reduced_depth_game_tree import *
 
-class MiniMaxPlayer:
-    def __init__(self):
+class HeuristicMiniMax:
+    def __init__(self, ply):
         self.symbol = None
         self.number = None
-  
+        self.ply = ply
+
     def set_player_symbol(self, n):
         self.symbol = n
   
     def set_player_number(self, n):
         self.number = n
         root_state = [[None, None, None], [None, None, None], [None, None, None]]
-        self.game_tree = GameTree(root_state, self.number)
-        self.game_tree.build_tree()
-        self.game_tree.set_node_values()
+        self.game_tree = ReducedSearchGameTree(root_state, self.number, self.ply)
 
     def choose_move(self, game_board):
         choices = [(i,j) for i in range(3) for j in range(3) if game_board[i][j] == None]
         current_node = self.game_tree.nodes_dict[str(game_board)]
+        self.game_tree.build_tree([current_node])
+        self.game_tree.set_node_values()
         max_value_node = current_node.children[0]
         debug_info = {}
 
