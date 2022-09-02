@@ -81,5 +81,5 @@ for x in range(max_col):
         fdiag[x+y].append(board[y][x])
         bdiag[x-y-min_bdiag].append(board[y][x])
 
-print([diag for diag in fdiag if len(diag) >= 4])
-print([diag for diag in bdiag if len(diag) >= 4])
+
+print([n for n in range(3)])

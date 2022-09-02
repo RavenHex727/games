@@ -20,14 +20,22 @@ class HeuristicMiniMax:
 
     def choose_move(self, game_board):
         choices = [(i,j) for i in range(3) for j in range(3) if game_board[i][j] == None]
-        current_node = self.game_tree.nodes_dict[str(game_board)]
-        self.game_tree.build_tree([current_node])
-        self.game_tree.set_node_values()
-        max_value_node = current_node.children[0]
-        debug_info = {}
+        self.game_tree.reset_node_values()
 
-        for child in current_node.children:
-            debug_info[str(child.state)] = child.value
+        if game_board not in list(self.game_tree.nodes_dict.keys()):
+            self.game_tree.nodes_dict[str(game_board)] = Node(game_board, self.number, self.number)
+
+        current_node = self.game_tree.nodes_dict[str(game_board)]
+
+        self.game_tree.build_tree([current_node])
+        children = self.game_tree.build_tree([current_node])
+
+        for _ in range(self.ply - 1):
+            self.game_tree.build_tree(children)
+            children = self.game_tree.build_tree(children)
+
+        self.game_tree.set_node_values(current_node)
+        max_value_node = current_node.children[0]
 
         for child in current_node.children:
             if child.value > max_value_node.value:
@@ -41,6 +49,6 @@ class HeuristicMiniMax:
 
             if new_board == max_value_node.state:
                 optimal_choices.append(choice)
-        
+
         choice = random.choice(optimal_choices)
         return choice

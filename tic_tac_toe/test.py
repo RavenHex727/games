@@ -103,6 +103,73 @@ for _ in range(25):
 print(win_data)
 '''
 
-players = [HeuristicMiniMax(ply=9), MiniMaxPlayer()]
-game = TicTacToe(players)
-game.run_to_completion()
+win_data = {1: 0, 2: 0, "Tie": 0}
+for _ in range(10):
+    players = [HeuristicMiniMax(ply=5), HeuristicMiniMax(ply=9)]
+    game = TicTacToe(players)
+    game.run_to_completion()
+
+    win_data[game.winner] += 1
+
+for _ in range(10):
+    players = [HeuristicMiniMax(ply=9), HeuristicMiniMax(ply=5)]
+    game = TicTacToe(players)
+    game.run_to_completion()
+    if game.winner == 1:
+        win_data[2] += 1
+
+    if game.winner == 2:
+        win_data[1] += 1
+
+    if game.winner == "Tie":
+        win_data["Tie"] += 1
+
+print(f"5 ply vs 9 ply {win_data}")
+
+
+win_data = {1: 0, 2: 0, "Tie": 0}
+for _ in range(10):
+    players = [HeuristicMiniMax(ply=5), RandomPlayer()]
+    game = TicTacToe(players)
+    game.run_to_completion()
+
+    win_data[game.winner] += 1
+
+for _ in range(10):
+    players = [RandomPlayer(), HeuristicMiniMax(ply=5)]
+    game = TicTacToe(players)
+    game.run_to_completion()
+    if game.winner == 1:
+        win_data[2] += 1
+
+    if game.winner == 2:
+        win_data[1] += 1
+
+    if game.winner == "Tie":
+        win_data["Tie"] += 1
+
+print(f"5 ply vs Random {win_data}")
+
+
+win_data = {1: 0, 2: 0, "Tie": 0}
+for _ in range(10):
+    players = [HeuristicMiniMax(ply=9), RandomPlayer()]
+    game = TicTacToe(players)
+    game.run_to_completion()
+
+    win_data[game.winner] += 1
+
+for _ in range(10):
+    players = [RandomPlayer(), HeuristicMiniMax(ply=9)]
+    game = TicTacToe(players)
+    game.run_to_completion()
+    if game.winner == 1:
+        win_data[2] += 1
+
+    if game.winner == 2:
+        win_data[1] += 1
+
+    if game.winner == "Tie":
+        win_data["Tie"] += 1
+
+print(f"9 ply vs Random {win_data}")

@@ -65,10 +65,10 @@ class Node():
 
         return [child.value for child in self.children]
 
-    def heuristic_evaluation(self, game_state):
+    def heuristic_evaluation(self):
         rows_columns_diagonals = self.get_rows() + self.get_columns() + self.get_diagonals()
 
-        if node.player_num == 1:
+        if self.player_num == 1:
             node_symbol = "X"
             opponent_symbol = "O"
 
@@ -79,11 +79,11 @@ class Node():
         if self.check_for_winner() != None:
             if self.check_for_winner() == self.player_num:
                 return 1
-            
+
             if self.check_for_winner() == 3 - self.player_num:
                 return -1
 
-            else:
+            if self.check_for_winner() == "Tie":
                 return 0
 
         else:
@@ -98,10 +98,10 @@ class Node():
 
             return value / 8
 
-
-    def set_node_value(self, last_layer_nodes):
-        for node in last_layer_nodes:
-            node.value = self.heuristic_evaluation(node.state)
+    def set_node_value(self):
+        if self.children == None or len(self.children) == 0:
+            self.value = self.heuristic_evaluation()
+            return 
 
         if self.turn == self.player_num:
             self.value = max(self.children_to_value())
@@ -143,25 +143,23 @@ class ReducedSearchGameTree():
         node.children = children
 
     def set_node_values(self, current_node):
-        if self.current_node.value == None:
-            self.current_node.set_node_value()
+        if current_node.value == None:
+            current_node.set_node_value()
+
+    def reset_node_values(self):
+        for node in list(self.nodes_dict.values()):
+            node.value = None
 
     def build_tree(self, current_nodes):
-        if len(self.current_nodes) == 0:
-            self.current_nodes = current_nodes
-            return
-
         children = []
 
-        #for _ in range(self.ply):
-            for node in self.current_nodes:
-                self.create_children(node)
+        for node in current_nodes:
+            self.create_children(node)
 
-                if len(node.children) != 0:
-                    children += node.children
+            if len(node.children) != 0:
+                children += node.children
 
-                else:
-                    self.num_terminal_nodes += 1
+            else:
+                self.num_terminal_nodes += 1
 
-            self.current_nodes = children
-            self.build_tree(children)
+        return children
