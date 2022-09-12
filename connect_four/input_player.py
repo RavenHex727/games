@@ -22,7 +22,7 @@ class InputPlayer:
         choice = input(f"Which column do you wish to make your move in? These are your options: {choices} \n")
 
         if int(choice) not in choices:
-            print("Invalid move, try again")
-            choice = input(f"Which column do you wish to make your move in? These are your options: {choices}")
+            print("Invalid move")
+            return None
 
         return int(choice)

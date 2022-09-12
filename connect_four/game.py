@@ -28,6 +28,10 @@ class ConnectFour:
     def complete_round(self):
         for player in self.players:
             player_move = player.choose_move(self.board)
+
+            if player_move == None:
+                continue
+
             i = self.get_row_with_lowest_available_column(player_move)
             self.board[i][player_move] = player.number
 
@@ -59,9 +63,17 @@ class ConnectFour:
 
         return fdiag + bdiag
 
+    def get_columns(self):
+        columns = []
+
+        for column_index in range(len(self.board[0])):
+            columns.append([row[column_index] for row in self.board])
+
+        return columns
+
     def check_for_winner(self):
         rows = self.board.copy()
-        cols = [[self.board[i][j] for i in range(6)] for j in range(7)]
+        cols = self.get_columns()
         diags = self.get_diagonals()
 
         str_info = []
