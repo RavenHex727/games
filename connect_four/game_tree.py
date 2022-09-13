@@ -107,7 +107,7 @@ class Node():
                 if set(element) == {0, 3 - self.player_num} and element.count(0) == 1 and self.turn != self.player_num:
                     value -= 1
 
-            return value / 37
+            return value / 8
 
     def set_node_value(self):
         if self.children == None or len(self.children) == 0:
