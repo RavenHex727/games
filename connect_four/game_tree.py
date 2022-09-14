@@ -1,6 +1,8 @@
 import copy
 import time
 import random
+import itertools
+
 
 class Node():
     def __init__(self, state, turn, player_num):
@@ -11,6 +13,14 @@ class Node():
         self.previous = []
         self.children = []
         self.value = None
+
+        perms1 = list(itertools.permutations(list("000" + str(self.player_num))))
+        perms2 = list(itertools.permutations(list("00" + str(self.player_num) * 2)))
+        perms3 = list(itertools.permutations(list("0" + str(self.player_num) * 3)))
+        perms4 = list(itertools.permutations(list("000" + str(3 - self.player_num))))
+        perms5 = list(itertools.permutations(list("00" + str(3 - self.player_num) * 2)))
+        perms6 = list(itertools.permutations(list("0" + str(3 - self.player_num) * 3)))
+        self.perms = [perms1, perms2, perms3, perms4, perms5, perms6]
 
     def get_rows(self):
         return [row for row in self.state]
@@ -75,6 +85,13 @@ class Node():
 
         return None
 
+    def check_if_list_element_in_str(self, input_list, input_string):
+        for element in input_list:
+            if element in input_string:
+                return True
+
+        return False
+
     def children_to_value(self):
         if self.children == None or len(self.children) == 0:
             return None
@@ -97,17 +114,29 @@ class Node():
             if self.check_for_winner() == "Tie":
                 return 0
 
-        else: #figure out better function
+        else: 
             value = 0
-
-            for element in rows_columns_diagonals:
-                if set(element) == {self.player_num, 0} and element.count(0) == 1 and self.turn == self.player_num:
+#todo: figure out how to deal with all scenarios below except other player. multiple appearences of an item
+            for element in rows_columns_diagonals: 
+                if self.check_if_list_element_in_str(self.perms[2], element) and self.turn == self.player_num:
                     value += 1
 
-                if set(element) == {0, 3 - self.player_num} and element.count(0) == 1 and self.turn != self.player_num:
+                if self.check_if_list_element_in_str(self.perms[5], element) and self.turn == 3 - self.player_num:
                     value -= 1
 
-            return value / 8
+                if self.check_if_list_element_in_str(self.perms[1], element) and self.turn == self.player_num:
+                    value += 0.35
+
+                if self.check_if_list_element_in_str(self.perms[4], element) and self.turn == 3 - self.player_num:
+                    value -= 0.35
+
+                if self.check_if_list_element_in_str(self.perms[0], element) and self.turn == self.player_num:
+                    value += 0.1
+
+                if self.check_if_list_element_in_str(self.perms[3], element) and self.turn == 3 - self.player_num:
+                    value -= 0.1
+
+            return value / 37
 
     def set_node_value(self):
         if self.children == None or len(self.children) == 0:
@@ -188,3 +217,13 @@ class ReducedSearchGameTree():
                 self.num_terminal_nodes += 1
 
         return children
+
+    def build_ply(self, current_node):
+
+        self.build_tree([current_node])
+        children = self.build_tree([current_node])
+
+        for _ in range(self.ply - 1):
+            self.build_tree(children)
+            children = self.build_tree(children)
+

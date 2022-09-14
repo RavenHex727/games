@@ -2,7 +2,9 @@ import random
 import math
 import sys
 sys.path.append('connect_four')
-from reduced_depth_game_tree import *
+#from reduced_depth_game_tree import *
+from game_tree import *
+
 
 class HeuristicMiniMax:
     def __init__(self, ply):
@@ -41,14 +43,8 @@ class HeuristicMiniMax:
             self.game_tree.nodes_dict[str(game_board)] = Node(game_board, self.number, self.number)
 
         current_node = self.game_tree.nodes_dict[str(game_board)]
-
-        self.game_tree.build_tree([current_node])
-        children = self.game_tree.build_tree([current_node])
-
-        for _ in range(self.ply - 1):
-            self.game_tree.build_tree(children)
-            children = self.game_tree.build_tree(children)
-
+        self.game_tree.build_ply(current_node)
+ 
         self.game_tree.set_node_values(current_node)
         max_value_node = current_node.children[0]
 
