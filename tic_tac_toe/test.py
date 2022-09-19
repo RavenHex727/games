@@ -102,7 +102,7 @@ for _ in range(25):
 
 print(win_data)
 '''
-
+'''
 win_data = {1: 0, 2: 0, "Tie": 0}
 for _ in range(10):
     players = [HeuristicMiniMax(ply=5), HeuristicMiniMax(ply=9)]
@@ -173,3 +173,8 @@ for _ in range(10):
         win_data["Tie"] += 1
 
 print(f"9 ply vs Random {win_data}")
+'''
+
+players = [HeuristicMiniMax(ply=5), HeuristicMiniMax(ply=9)]
+game = TicTacToe(players)
+game.run_to_completion()

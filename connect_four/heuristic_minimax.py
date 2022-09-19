@@ -29,6 +29,17 @@ class HeuristicMiniMax:
 
         return largest_row
 
+    def evaluate_optimal_choices(self, game_board, optimal_choices):
+        info = {}
+
+        for choice in optimal_choices:
+            new_board = copy.deepcopy(game_board)
+            i = self.get_row_with_lowest_available_column(choice, new_board)
+            new_board[i][choice] = self.number
+
+            current_node = self.game_tree.nodes_dict[str(new_board)]
+            info[choice] = current_node.heuristic_evaluation()
+
     def choose_move(self, game_board):
         choices = []
 
@@ -59,7 +70,10 @@ class HeuristicMiniMax:
             i = self.get_row_with_lowest_available_column(choice, new_board)
             new_board[i][choice] = self.number
 
-            if new_board == max_value_node.state:
+            if self.game_tree.nodes_dict[str(new_board)].check_for_winner() == self.number:
+                return choice
+
+            if self.game_tree.nodes_dict[str(new_board)].value == max_value_node.value:
                 optimal_choices.append(choice)
 
         choice = random.choice(optimal_choices)

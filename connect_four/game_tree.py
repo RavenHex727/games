@@ -92,6 +92,15 @@ class Node():
 
         return False
 
+    def num_list_element_in_str(self, input_list, input_string):
+        num_instances = 0
+
+        for element in input_list:
+            if element in input_string:
+                num_instances += 1
+
+        return num_instances
+
     def children_to_value(self):
         if self.children == None or len(self.children) == 0:
             return None
@@ -106,37 +115,57 @@ class Node():
 
         if self.check_for_winner() != None:
             if self.check_for_winner() == self.player_num:
-                return 1
+                return 9999999999999999
 
             if self.check_for_winner() == 3 - self.player_num:
-                return -1
+                return -9999999999999999
 
             if self.check_for_winner() == "Tie":
                 return 0
 
         else: 
             value = 0
-#todo: figure out how to deal with all scenarios below except other player. multiple appearences of an item
+#todo: multiple appearences of an item
             for element in rows_columns_diagonals: 
-                if self.check_if_list_element_in_str(self.perms[2], element) and self.turn == self.player_num:
-                    value += 1
+                if self.turn == self.player_num:
+                    if self.check_if_list_element_in_str(self.perms[2], element):
+                        value += 9999999999999999
 
-                if self.check_if_list_element_in_str(self.perms[5], element) and self.turn == 3 - self.player_num:
-                    value -= 1
+                    if self.check_if_list_element_in_str(self.perms[5], element):
+                        value += 99999999999999999999999999999
 
-                if self.check_if_list_element_in_str(self.perms[1], element) and self.turn == self.player_num:
-                    value += 0.35
+                    if self.check_if_list_element_in_str(self.perms[1], element):
+                        value += 35
 
-                if self.check_if_list_element_in_str(self.perms[4], element) and self.turn == 3 - self.player_num:
-                    value -= 0.35
+                    if self.check_if_list_element_in_str(self.perms[4], element):
+                        value += 35
 
-                if self.check_if_list_element_in_str(self.perms[0], element) and self.turn == self.player_num:
-                    value += 0.1
+                    if self.check_if_list_element_in_str(self.perms[0], element):
+                        value += 10
 
-                if self.check_if_list_element_in_str(self.perms[3], element) and self.turn == 3 - self.player_num:
-                    value -= 0.1
+                    if self.check_if_list_element_in_str(self.perms[3], element):
+                        value += 10
 
-            return value / 37
+                if self.turn == 3 - self.player_num:
+                    if self.check_if_list_element_in_str(self.perms[5], element):
+                        value -= 9999999999999999
+
+                    if self.check_if_list_element_in_str(self.perms[2], element):
+                        value -= 9999999999999999
+
+                    if self.check_if_list_element_in_str(self.perms[4], element):
+                        value -= 35
+
+                    if self.check_if_list_element_in_str(self.perms[1], element):
+                        value -= 35
+
+                    if self.check_if_list_element_in_str(self.perms[3], element):
+                        value -= 10
+
+                    if self.check_if_list_element_in_str(self.perms[0], element):
+                        value -= 10
+
+            return value
 
     def set_node_value(self):
         if self.children == None or len(self.children) == 0:
@@ -227,3 +256,26 @@ class ReducedSearchGameTree():
             self.build_tree(children)
             children = self.build_tree(children)
 
+
+'''
+            for element in rows_columns_diagonals: 
+                if self.check_if_list_element_in_str(self.perms[2], element) and self.turn == self.player_num:
+                    value += 9999999999999999
+
+                if self.check_if_list_element_in_str(self.perms[5], element) and self.turn == 3 - self.player_num:
+                    value -= 9999999999999999
+
+                if self.check_if_list_element_in_str(self.perms[1], element) and self.turn == self.player_num:
+                    value += 35
+
+                if self.check_if_list_element_in_str(self.perms[4], element) and self.turn == 3 - self.player_num:
+                    value -= 35
+
+                if self.check_if_list_element_in_str(self.perms[0], element) and self.turn == self.player_num:
+                    value += 10
+
+                if self.check_if_list_element_in_str(self.perms[3], element) and self.turn == 3 - self.player_num:
+                    value -= 10
+
+            return value #value / 37
+'''
