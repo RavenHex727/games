@@ -39,6 +39,7 @@ class HeuristicMiniMax:
 
             current_node = self.game_tree.nodes_dict[str(new_board)]
             info[choice] = current_node.heuristic_evaluation()
+            #work in progress
 
     def choose_move(self, game_board):
         choices = []

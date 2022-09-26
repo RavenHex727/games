@@ -5,7 +5,6 @@ import itertools
 
 s = '0001'
 nums = list(s)
-permutations = list(itertools.permutations(nums))
-print([''.join(permutation) for permutation in permutations])
-print(list("kingslayer, destroying castles in the sky"))
+perms = list(itertools.permutations(list(str(0)*3 + str(1))))
+print([''.join(perms) for perms in perms])
 

@@ -22,6 +22,7 @@ class Node():
         perms6 = list(itertools.permutations(list("0" + str(3 - self.player_num) * 3)))
         self.perms = [perms1, perms2, perms3, perms4, perms5, perms6]
 
+
     def get_rows(self):
         return [row for row in self.state]
 
@@ -86,6 +87,8 @@ class Node():
         return None
 
     def check_if_list_element_in_str(self, input_list, input_string):
+        input_list = [''.join(perms) for perms in input_list]
+
         for element in input_list:
             if element in input_string:
                 return True
@@ -132,7 +135,7 @@ class Node():
                         value += 9999999999999999
 
                     if self.check_if_list_element_in_str(self.perms[5], element):
-                        value += 99999999999999999999999999999
+                        value += 9999999999999999
 
                     if self.check_if_list_element_in_str(self.perms[1], element):
                         value += 35
