@@ -86,23 +86,13 @@ class Node():
 
         return None
 
-    def check_if_list_element_in_str(self, input_list, input_string):
-        input_list = [''.join(perms) for perms in input_list]
+    def check_if_list_element_in_str(self, perms, input_string):
 
-        for element in input_list:
-            if element in input_string:
+        for element in [''.join(perm) for perm in perms]:
+            if element in ''.join(str(x) for x in input_string):
                 return True
 
         return False
-
-    def num_list_element_in_str(self, input_list, input_string):
-        num_instances = 0
-
-        for element in input_list:
-            if element in input_string:
-                num_instances += 1
-
-        return num_instances
 
     def children_to_value(self):
         if self.children == None or len(self.children) == 0:
@@ -128,7 +118,6 @@ class Node():
 
         else: 
             value = 0
-#todo: multiple appearences of an item
             for element in rows_columns_diagonals: 
                 if self.turn == self.player_num:
                     if self.check_if_list_element_in_str(self.perms[2], element):

@@ -88,16 +88,32 @@ class SemiRandomPlayer:
                 win_choices.append(choice)
 
             rows = copy.deepcopy(new_board)
+
+            info = []
+
+            for n in range(0, len(rows)):
+                if rows[n] != game_board[n]:
+                    info.append(rows[n])
+                
             cols = self.get_columns(rows)
+
+            for n in range(0, len(cols)):
+                if cols[n] != self.get_columns(game_board)[n]:
+                    info.append(cols[n])
+
             diags = self.get_diagonals(rows)
+
+            for n in range(0, len(diags)):
+                if diags[n] != self.get_diagonals(game_board)[n]:
+                    info.append(diags[n])
+                
             perms = list(itertools.permutations(list(str(3 - self.number)*3 + str(self.number))))
             perms = [''.join(perm) for perm in perms]
 
-            for info in rows + cols + diags:
-                if self.check_if_list_element_in_str(perms, info):
-                    print("block choices")
-                    block_choices.append(choice) 
-
+            for data in info:
+                if self.check_if_list_element_in_str(perms, "".join([str(element) for element in data])):
+                    print(f"block choices {choice}")
+                    block_choices.append(choice)
             
         if len(win_choices) > 0:
             return random.choice(win_choices)

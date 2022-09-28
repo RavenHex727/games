@@ -39,7 +39,10 @@ class HeuristicMiniMax:
 
             current_node = self.game_tree.nodes_dict[str(new_board)]
             info[choice] = current_node.heuristic_evaluation()
-            #work in progress
+            print(f"Current Node's turn {current_node.turn}. Heuristic player num {self.number}")
+        
+        print(max(info, key=info.get), info)
+        return max(info, key=info.get)
 
     def choose_move(self, game_board):
         choices = []
@@ -77,5 +80,5 @@ class HeuristicMiniMax:
             if self.game_tree.nodes_dict[str(new_board)].value == max_value_node.value:
                 optimal_choices.append(choice)
 
-        choice = random.choice(optimal_choices)
-        return choice
+        #choice = random.choice(optimal_choices)
+        return self.evaluate_optimal_choices(game_board, optimal_choices)
