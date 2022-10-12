@@ -68,6 +68,15 @@ class SemiRandomPlayer:
                 return True
 
         return False
+
+    def get_num_instances(self, input_list, input_string):
+        num_instances = 0
+
+        for element in input_list:
+            if element in input_string:
+                num_instances += 1
+
+        return num_instances
     
     def choose_move(self, game_board):
         choices = []
@@ -87,34 +96,28 @@ class SemiRandomPlayer:
             if self.check_for_winner(new_board) == self.number:
                 win_choices.append(choice)
 
-            rows = copy.deepcopy(new_board)
+            new_info = [new_board[i], [row[choice] for row in new_board]]
+            old_info = [game_board[i], [row[choice] for row in game_board]]
 
-            info = []
-
-            for n in range(0, len(rows)):
-                if rows[n] != game_board[n]:
-                    info.append(rows[n])
-                
-            cols = self.get_columns(rows)
-
-            for n in range(0, len(cols)):
-                if cols[n] != self.get_columns(game_board)[n]:
-                    info.append(cols[n])
-
-            diags = self.get_diagonals(rows)
+            diags = self.get_diagonals(copy.deepcopy(new_board))
 
             for n in range(0, len(diags)):
                 if diags[n] != self.get_diagonals(game_board)[n]:
-                    info.append(diags[n])
-                
+                    new_info.append(diags[n])
+                    old_info.append(self.get_diagonals(game_board)[n])
+
             perms = list(itertools.permutations(list(str(3 - self.number)*3 + str(self.number))))
             perms = [''.join(perm) for perm in perms]
 
-            for data in info:
-                if self.check_if_list_element_in_str(perms, "".join([str(element) for element in data])):
+
+            for n in range(0, len(old_info)):
+                num_instances_new = self.get_num_instances(perms, "".join([str(element) for element in new_info[n]]))
+                num_instances_old = self.get_num_instances(perms, "".join([str(element) for element in old_info[n]]))
+
+                if num_instances_new > num_instances_old:
                     print(f"block choices {choice}")
                     block_choices.append(choice)
-            
+
         if len(win_choices) > 0:
             return random.choice(win_choices)
 

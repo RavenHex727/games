@@ -7,18 +7,17 @@ from semi_random_player import *
 from heuristic_minimax import *
 import time
 
-#game should be at max 10 sec
 win_data = {1: 0, 2: 0, "Tie": 0}
-'''
-for _ in range(10):
-    players = [HeuristicMiniMax(ply=4), SemiRandomPlayer()]
+
+for _ in range(15):
+    players = [HeuristicMiniMax(ply=3), SemiRandomPlayer()]
     game = ConnectFour(players)
     game.run_to_completion()
     win_data[game.winner] += 1
     print("Heuristic player 1", game.winner)
 
-for _ in range(10):
-    players = [SemiRandomPlayer(), HeuristicMiniMax(ply=4)]
+for _ in range(15):
+    players = [SemiRandomPlayer(), HeuristicMiniMax(ply=3)]
     game = ConnectFour(players)
     game.run_to_completion()
     print("Heuristic player 2", game.winner)
@@ -30,23 +29,24 @@ for _ in range(10):
         win_data["Tie"] += 1
 
 print(win_data)
-'''
 
 '''
 avg_time = 0
 for _ in range(25):
     start_time = time.time()
-    players = [RandomPlayer(), HeuristicMiniMax(ply=4)]
+    players = [RandomPlayer(), HeuristicMiniMax(ply=3)]
     game = ConnectFour(players)
     game.run_to_completion()
+    print(f"Winner {game.winner}")
+    print(f"Game took {time.time() - start_time} seconds")
     avg_time += time.time() - start_time
-    print(time.time() - start_time)
 
 print(f"avg time is {avg_time/25}")
-
 '''
 
-players = [InputPlayer(), HeuristicMiniMax(ply=4)]
+'''
+players = [InputPlayer(), SemiRandomPlayer()]
 game = ConnectFour(players)
 game.run_to_completion()
 print(game.winner)
+'''

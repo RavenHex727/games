@@ -1,8 +1,8 @@
 import random
 import math
 import sys
+import time
 sys.path.append('connect_four')
-#from reduced_depth_game_tree import *
 from game_tree import *
 
 
@@ -39,12 +39,13 @@ class HeuristicMiniMax:
 
             current_node = self.game_tree.nodes_dict[str(new_board)]
             info[choice] = current_node.heuristic_evaluation()
-            print(f"Current Node's turn {current_node.turn}. Heuristic player num {self.number}")
+            #print(f"Current Node's turn {current_node.turn}. Heuristic player num {self.number}")
         
-        print(max(info, key=info.get), info)
+        #print(max(info, key=info.get), info)
         return max(info, key=info.get)
 
     def choose_move(self, game_board):
+        start_time = time.time()
         choices = []
 
         for i in range(6):
@@ -81,4 +82,5 @@ class HeuristicMiniMax:
                 optimal_choices.append(choice)
 
         #choice = random.choice(optimal_choices)
-        return self.evaluate_optimal_choices(game_board, optimal_choices)
+        print(f"Move took {time.time() - start_time} seconds")
+        return random.choice(optimal_choices)

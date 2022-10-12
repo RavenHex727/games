@@ -61,6 +61,15 @@ class Node():
 
         return columns
 
+    def get_num_instances(self, input_list, input_string):
+        num_instances = 0
+
+        for element in input_list:
+            if element in input_string:
+                num_instances += 1
+
+        return num_instances
+
     def check_for_winner(self):
         rows = self.state.copy()
         cols = self.get_columns()
@@ -118,44 +127,45 @@ class Node():
 
         else: 
             value = 0
+            #account for 3 in a row, but cant make that move?
             for element in rows_columns_diagonals: 
                 if self.turn == self.player_num:
                     if self.check_if_list_element_in_str(self.perms[2], element):
-                        value += 9999999999999999
+                        value += 9999999999999999*self.get_num_instances(self.perms[2], element)
 
                     if self.check_if_list_element_in_str(self.perms[5], element):
-                        value += 9999999999999999
+                        value += 9999999999999999*self.get_num_instances(self.perms[5], element)
 
                     if self.check_if_list_element_in_str(self.perms[1], element):
-                        value += 35
+                        value += 35*self.get_num_instances(self.perms[1], element)
 
                     if self.check_if_list_element_in_str(self.perms[4], element):
-                        value += 35
+                        value += 35*self.get_num_instances(self.perms[4], element)
 
                     if self.check_if_list_element_in_str(self.perms[0], element):
-                        value += 10
+                        value += 10*self.get_num_instances(self.perms[0], element)
 
                     if self.check_if_list_element_in_str(self.perms[3], element):
-                        value += 10
+                        value += 10*self.get_num_instances(self.perms[3], element)
 
                 if self.turn == 3 - self.player_num:
                     if self.check_if_list_element_in_str(self.perms[5], element):
-                        value -= 9999999999999999
+                        value -= 9999999999999999*self.get_num_instances(self.perms[5], element)
 
                     if self.check_if_list_element_in_str(self.perms[2], element):
-                        value -= 9999999999999999
+                        value -= 9999999999999999*self.get_num_instances(self.perms[2], element)
 
                     if self.check_if_list_element_in_str(self.perms[4], element):
-                        value -= 35
+                        value -= 35*self.get_num_instances(self.perms[4], element)
 
                     if self.check_if_list_element_in_str(self.perms[1], element):
-                        value -= 35
+                        value -= 35*self.get_num_instances(self.perms[1], element)
 
                     if self.check_if_list_element_in_str(self.perms[3], element):
-                        value -= 10
+                        value -= 10*self.get_num_instances(self.perms[3], element)
 
                     if self.check_if_list_element_in_str(self.perms[0], element):
-                        value -= 10
+                        value -= 10*self.get_num_instances(self.perms[0], element)
 
             return value
 
@@ -247,27 +257,3 @@ class ReducedSearchGameTree():
         for _ in range(self.ply - 1):
             self.build_tree(children)
             children = self.build_tree(children)
-
-
-'''
-            for element in rows_columns_diagonals: 
-                if self.check_if_list_element_in_str(self.perms[2], element) and self.turn == self.player_num:
-                    value += 9999999999999999
-
-                if self.check_if_list_element_in_str(self.perms[5], element) and self.turn == 3 - self.player_num:
-                    value -= 9999999999999999
-
-                if self.check_if_list_element_in_str(self.perms[1], element) and self.turn == self.player_num:
-                    value += 35
-
-                if self.check_if_list_element_in_str(self.perms[4], element) and self.turn == 3 - self.player_num:
-                    value -= 35
-
-                if self.check_if_list_element_in_str(self.perms[0], element) and self.turn == self.player_num:
-                    value += 10
-
-                if self.check_if_list_element_in_str(self.perms[3], element) and self.turn == 3 - self.player_num:
-                    value -= 10
-
-            return value #value / 37
-'''
