@@ -2,18 +2,14 @@ import random
 import math
 import sys
 import time
-sys.path.append('connect_four')
+sys.path.append('connect_four/competition_stuff')
 from game_tree import *
 
 
 class HeuristicMiniMax:
     def __init__(self, ply):
-        self.symbol = None
         self.number = None
         self.ply = ply
-
-    def set_player_symbol(self, n):
-        self.symbol = n
   
     def set_player_number(self, n):
         self.number = n
@@ -29,29 +25,8 @@ class HeuristicMiniMax:
 
         return largest_row
 
-    def evaluate_optimal_choices(self, game_board, optimal_choices):
-        info = {}
-
-        for choice in optimal_choices:
-            new_board = copy.deepcopy(game_board)
-            i = self.get_row_with_lowest_available_column(choice, new_board)
-            new_board[i][choice] = self.number
-
-            current_node = self.game_tree.nodes_dict[str(new_board)]
-            info[choice] = current_node.heuristic_evaluation()
-            #print(f"Current Node's turn {current_node.turn}. Heuristic player num {self.number}")
-        
-        #print(max(info, key=info.get), info)
-        return max(info, key=info.get)
-
-    def choose_move(self, game_board):
+    def choose_move(self, game_board, choices):
         start_time = time.time()
-        choices = []
-
-        for i in range(6):
-            for j in range(7):
-                if game_board[i][j] == 0 and j not in choices:
-                    choices.append(j)
 
         self.game_tree.reset_node_values()
 
@@ -81,6 +56,5 @@ class HeuristicMiniMax:
             if self.game_tree.nodes_dict[str(new_board)].value == max_value_node.value:
                 optimal_choices.append(choice)
 
-        #choice = random.choice(optimal_choices)
         print(f"Move took {time.time() - start_time} seconds")
         return random.choice(optimal_choices)

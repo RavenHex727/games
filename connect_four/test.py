@@ -4,6 +4,7 @@ from game import *
 from random_player import *
 from input_player import *
 from semi_random_player import *
+sys.path.append('connect_four/competition_stuff')
 from heuristic_minimax import *
 import time
 
@@ -29,20 +30,6 @@ for _ in range(15):
         win_data["Tie"] += 1
 
 print(win_data)
-
-'''
-avg_time = 0
-for _ in range(25):
-    start_time = time.time()
-    players = [RandomPlayer(), HeuristicMiniMax(ply=3)]
-    game = ConnectFour(players)
-    game.run_to_completion()
-    print(f"Winner {game.winner}")
-    print(f"Game took {time.time() - start_time} seconds")
-    avg_time += time.time() - start_time
-
-print(f"avg time is {avg_time/25}")
-'''
 
 '''
 players = [InputPlayer(), SemiRandomPlayer()]

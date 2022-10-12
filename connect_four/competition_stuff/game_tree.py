@@ -127,45 +127,45 @@ class Node():
 
         else: 
             value = 0
-            #account for 3 in a row, but cant make that move?
+
             for element in rows_columns_diagonals: 
                 if self.turn == self.player_num:
                     if self.check_if_list_element_in_str(self.perms[2], element):
-                        value += 9999999999999999*self.get_num_instances(self.perms[2], element)
+                        value += 9999999999999999 * self.get_num_instances(self.perms[2], element)
 
                     if self.check_if_list_element_in_str(self.perms[5], element):
-                        value += 9999999999999999*self.get_num_instances(self.perms[5], element)
+                        value += 9999999999999999 * self.get_num_instances(self.perms[5], element)
 
                     if self.check_if_list_element_in_str(self.perms[1], element):
-                        value += 35*self.get_num_instances(self.perms[1], element)
+                        value += 35 * self.get_num_instances(self.perms[1], element)
 
                     if self.check_if_list_element_in_str(self.perms[4], element):
-                        value += 35*self.get_num_instances(self.perms[4], element)
+                        value += 35 * self.get_num_instances(self.perms[4], element)
 
                     if self.check_if_list_element_in_str(self.perms[0], element):
-                        value += 10*self.get_num_instances(self.perms[0], element)
+                        value += 10 * self.get_num_instances(self.perms[0], element)
 
                     if self.check_if_list_element_in_str(self.perms[3], element):
-                        value += 10*self.get_num_instances(self.perms[3], element)
+                        value += 10 * self.get_num_instances(self.perms[3], element)
 
                 if self.turn == 3 - self.player_num:
                     if self.check_if_list_element_in_str(self.perms[5], element):
-                        value -= 9999999999999999*self.get_num_instances(self.perms[5], element)
+                        value -= 9999999999999999 * self.get_num_instances(self.perms[5], element)
 
                     if self.check_if_list_element_in_str(self.perms[2], element):
-                        value -= 9999999999999999*self.get_num_instances(self.perms[2], element)
+                        value -= 9999999999999999 * self.get_num_instances(self.perms[2], element)
 
                     if self.check_if_list_element_in_str(self.perms[4], element):
-                        value -= 35*self.get_num_instances(self.perms[4], element)
+                        value -= 35 * self.get_num_instances(self.perms[4], element)
 
                     if self.check_if_list_element_in_str(self.perms[1], element):
-                        value -= 35*self.get_num_instances(self.perms[1], element)
+                        value -= 35 * self.get_num_instances(self.perms[1], element)
 
                     if self.check_if_list_element_in_str(self.perms[3], element):
-                        value -= 10*self.get_num_instances(self.perms[3], element)
+                        value -= 10 * self.get_num_instances(self.perms[3], element)
 
                     if self.check_if_list_element_in_str(self.perms[0], element):
-                        value -= 10*self.get_num_instances(self.perms[0], element)
+                        value -= 10 * self.get_num_instances(self.perms[0], element)
 
             return value
 

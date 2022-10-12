@@ -78,15 +78,9 @@ class SemiRandomPlayer:
 
         return num_instances
     
-    def choose_move(self, game_board):
-        choices = []
+    def choose_move(self, game_board, choices):
         win_choices = []
         block_choices = []
-
-        for i in range(6):
-            for j in range(7):
-                if game_board[i][j] == 0 and j not in choices:
-                    choices.append(j)
 
         for choice in choices:
             new_board = copy.deepcopy(game_board)

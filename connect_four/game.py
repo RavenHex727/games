@@ -25,12 +25,26 @@ class ConnectFour:
 
         return largest_row
 
+    def get_possible_moves(self):
+        choices = []
+
+        for i in range(6):
+            for j in range(7):
+                if self.board[i][j] == 0 and j not in choices:
+                    choices.append(j)
+
+        return choices
+
     def complete_round(self):
         for player in self.players:
-            player_move = player.choose_move(self.board)
+            choices = self.get_possible_moves()
+            player_move = player.choose_move(self.board, choices)
 
             if player_move == None:
                 continue
+
+            if player_move not in choices:
+                player_move = choices[0]
 
             i = self.get_row_with_lowest_available_column(player_move)
             self.board[i][player_move] = player.number
