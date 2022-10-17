@@ -119,18 +119,3 @@ class SemiRandomPlayer:
             return random.choice(block_choices)
 
         return random.choice(choices)
-
-
-'''
-rows = new_board
-            cols = self.get_columns(new_board)
-            diags = self.get_diagonals(new_board)
-            perms = list(itertools.permutations(list(str(3 - self.number)*3 + str(self.number))))
-            perms = [''.join(perm) for perm in perms]
-
-            for info in rows + cols + diags:
-                if self.check_if_list_element_in_str(perms, info):
-                    print(choice)
-                    return choice
-
-'''

@@ -4,12 +4,15 @@ from game import *
 from random_player import *
 from input_player import *
 from semi_random_player import *
-sys.path.append('connect_four/competition_stuff')
+from maia import *
+#sys.path.append('connect_four/competition_stuff')
 from heuristic_minimax import *
+#from cayden_comp import *
 import time
 
 win_data = {1: 0, 2: 0, "Tie": 0}
 
+'''
 for _ in range(15):
     players = [HeuristicMiniMax(ply=3), SemiRandomPlayer()]
     game = ConnectFour(players)
@@ -30,10 +33,9 @@ for _ in range(15):
         win_data["Tie"] += 1
 
 print(win_data)
-
 '''
-players = [InputPlayer(), SemiRandomPlayer()]
+
+players = [HeuristicMiniMax(ply=3), SemiRandomPlayer()]
 game = ConnectFour(players)
 game.run_to_completion()
 print(game.winner)
-'''

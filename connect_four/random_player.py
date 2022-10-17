@@ -8,12 +8,5 @@ class RandomPlayer:
     def set_player_number(self, n):
         self.number = n
     
-    def choose_move(self, game_board):
-        choices = []
-
-        for i in range(6):
-            for j in range(7):
-                if game_board[i][j] == 0 and j not in choices:
-                    choices.append(j)
-
+    def choose_move(self, game_board, choices):
         return random.choice(choices)
