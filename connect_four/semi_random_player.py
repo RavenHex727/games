@@ -77,8 +77,12 @@ class SemiRandomPlayer:
                 num_instances += 1
 
         return num_instances
+
+    def transpose(self, input_board):
+        return np.array(input_board).T.tolist()
     
     def choose_move(self, game_board, choices):
+        #game_board = self.transpose(game_board)
         win_choices = []
         block_choices = []
 

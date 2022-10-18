@@ -3,6 +3,7 @@ import time
 import numpy as np
 import itertools
 
-s = '0001'
-nums = list(s)
-perms = list(itertools.permutations(list(str(0)*3 + str(1))))
+def transpose(input_board):
+    return np.array(input_board).T.tolist()
+
+print(transpose([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))

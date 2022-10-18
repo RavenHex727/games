@@ -2,6 +2,7 @@ import copy
 import time
 import random
 import math
+import numpy as np
 import itertools
 
 
@@ -269,6 +270,9 @@ class HeuristicMiniMax:
         self.number = n
         root_state = [[0 for _ in range(7)] for _ in range(6)]
         self.game_tree = ReducedSearchGameTree(root_state, self.number, self.ply)
+
+    def transpose(self, input_board):
+        return np.array(input_board).T.tolist()
 
     def get_row_with_lowest_available_column(self, j, board):
         largest_row = 0
