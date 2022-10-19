@@ -39,9 +39,6 @@ class ConnectFour:
         for player in self.players:
             choices = self.get_possible_moves()
             player_move = player.choose_move(self.board, choices)
-            
-            if player == self.players[0]:
-                print(f"Anton moved {player_move}")
 
             if player_move not in choices or player_move == None:
                 player_move = choices[0]

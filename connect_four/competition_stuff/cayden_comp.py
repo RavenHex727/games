@@ -261,7 +261,7 @@ class ReducedSearchGameTree():
             children = self.build_tree(children)
 
 class Cayden:
-    def __init__(self, ply):
+    def __init__(self, ply=3):
         self.number = None
         self.ply = ply
   
@@ -310,5 +310,5 @@ class Cayden:
             if self.game_tree.nodes_dict[str(new_board)].value == max_value_node.value:
                 optimal_choices.append(choice)
 
-        print(f"Cayden took {time.time() - start_time} seconds to make his move")
+        #print(f"Cayden took {time.time() - start_time} seconds to make his move")
         return random.choice(optimal_choices)

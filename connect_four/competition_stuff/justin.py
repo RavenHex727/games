@@ -411,6 +411,6 @@ class Justin():
         self.tree.extend_game_tree()
         self.tree.set_node_scores()
         return self.tree.get_best_move()
-    
+
     def report_winner(self, winner_num,board):
         pass

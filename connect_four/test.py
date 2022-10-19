@@ -17,16 +17,16 @@ import time
 
 win_data = {1: 0, 2: 0, "Tie": 0}
 
-'''
-for _ in range(15):
-    players = [Cayden(ply=3), Anton()]
+
+for _ in range(2):
+    players = [Cayden(), Charlie()]
     game = ConnectFour(players)
     game.run_to_completion()
     win_data[game.winner] += 1
     print("My player 1", game.winner)
 
-for _ in range(15):
-    players = [Anton(), Cayden(ply=3)]
+for _ in range(2):
+    players = [Charlie(), Cayden()]
     game = ConnectFour(players)
     game.run_to_completion()
     print("Me player 2", game.winner)
@@ -38,9 +38,10 @@ for _ in range(15):
         win_data["Tie"] += 1
 
 print(win_data)
-'''
 
-players = [Justin(4), SemiRandomPlayer()]
+'''
+players = [Justin(), Cayden()]
 game = ConnectFour(players)
 game.run_to_completion()
 print(game.winner)
+'''
