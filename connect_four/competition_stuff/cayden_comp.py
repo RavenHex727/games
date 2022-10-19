@@ -260,8 +260,7 @@ class ReducedSearchGameTree():
             self.build_tree(children)
             children = self.build_tree(children)
 
-
-class HeuristicMiniMax:
+class Cayden:
     def __init__(self, ply):
         self.number = None
         self.ply = ply
@@ -270,9 +269,6 @@ class HeuristicMiniMax:
         self.number = n
         root_state = [[0 for _ in range(7)] for _ in range(6)]
         self.game_tree = ReducedSearchGameTree(root_state, self.number, self.ply)
-
-    def transpose(self, input_board):
-        return np.array(input_board).T.tolist()
 
     def get_row_with_lowest_available_column(self, j, board):
         largest_row = 0
@@ -314,5 +310,5 @@ class HeuristicMiniMax:
             if self.game_tree.nodes_dict[str(new_board)].value == max_value_node.value:
                 optimal_choices.append(choice)
 
-        print(f"Move took {time.time() - start_time} seconds")
+        print(f"Cayden took {time.time() - start_time} seconds to make his move")
         return random.choice(optimal_choices)

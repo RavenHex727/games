@@ -1,5 +1,8 @@
 import random
 import math
+import time
+import numpy as np
+import copy
 
 class Node:
   def __init__(self, state, player):
@@ -48,18 +51,7 @@ class HeuristicGameTree:
       return '1'
 
   def state_to_string(self, state):
-    print(state)
-    #make adapter
-    for row in range(len(state)):
-        for column in range(len(state[row])):
-            num = state[row][column]
-
-            if num != 0:
-                state[row][column] = str(num)
-
-            else:
-                state[row][column] = None
-
+    #print(state)
     state_list = []
     for col in state:
       state_list += col
@@ -227,8 +219,9 @@ class HeuristicGameTree:
       else:
         node.score = -1
 
+
 class Anton:
-  def __init__(self, search_depth = 2):
+  def __init__(self, search_depth = 4):
     self.symbol = None
     self.number = None
     self.first = None
@@ -240,6 +233,7 @@ class Anton:
   
   def set_player_number(self, n):
     self.number = n
+    self.symbol = str(n)
   # def set_first(self, first):
     self.first = '1'
     self.game_tree = HeuristicGameTree(self.number, self.first, self.search_depth)
@@ -250,11 +244,25 @@ class Anton:
   
   def choose_move(self, state, choices):
     #col_state = state
+    start_time = time.time()
     col_state = self.transpose(state)
-    state_string = self.game_tree.state_to_string(col_state)
+    new_state = copy.deepcopy(col_state)
+
+    for row in range(len(col_state)):
+        for column in range(len(col_state[row])):
+            num = col_state[row][column]
+
+            if num != 0:
+                new_state[row][column] = str(num)
+
+            else:
+                new_state[row][column] = None
+
+    state_string = self.game_tree.state_to_string(new_state)
     if state_string not in self.game_tree.state_dict.keys():
-      self.game_tree.state_dict[state_string] = Node(col_state, self.symbol)
+      self.game_tree.state_dict[state_string] = Node(new_state, self.symbol)
     state_node = self.game_tree.state_dict[state_string]
+
     if state_node.children == []:
       self.game_tree.build_part_of_tree(state_node)
       self.game_tree.set_scores(state_node, self.symbol)
@@ -264,10 +272,12 @@ class Anton:
     #random_index = random.choice(max_indices)
     chosen_state = state_node.children[max_indices[0]].state
     for choice in choices:
-      choice_state = [[col_state[i][j] for j in range(6)] for i in range(7)]
+      choice_state = copy.deepcopy(new_state)#[[new_state[i][j] for j in range(6)] for i in range(7)]
       i = 0
       while i+1 < 6 and choice_state[choice][i+1]==None:
         i+=1
       choice_state[choice][i] = self.symbol
+
       if choice_state == chosen_state:
+        #print(f"Anton took {time.time() - start_time} seconds to make his move")
         return choice
