@@ -19,17 +19,15 @@ win_data = {1: 0, 2: 0, "Tie": 0}
 
 
 for _ in range(2):
-    players = [Cayden(), Charlie()]
+    players = [Charlie(), William()]
     game = ConnectFour(players)
     game.run_to_completion()
     win_data[game.winner] += 1
-    print("My player 1", game.winner)
 
 for _ in range(2):
-    players = [Charlie(), Cayden()]
+    players = [William(), Charlie()]
     game = ConnectFour(players)
     game.run_to_completion()
-    print("Me player 2", game.winner)
 
     if game.winner != "Tie":
         win_data[3 - game.winner] += 1
@@ -40,7 +38,7 @@ for _ in range(2):
 print(win_data)
 
 '''
-players = [Justin(), Cayden()]
+players = [Justin(), SemiRandomPlayer()]
 game = ConnectFour(players)
 game.run_to_completion()
 print(game.winner)
