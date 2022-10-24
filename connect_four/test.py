@@ -15,27 +15,29 @@ from william import *
 from cayden_comp import *
 import time
 
-win_data = {1: 0, 2: 0, "Tie": 0}
+
+def run_games(n, players):
+    win_data = {1: 0, 2: 0, "Tie": 0}
+
+    for _ in range(int(n / 2)):
+        game = ConnectFour(players)
+        game.run_to_completion()
+        win_data[game.winner] += 1
+
+    for _ in range(int(n / 2)):
+        game = ConnectFour(players[::-1])
+        game.run_to_completion()
+
+        if game.winner != "Tie":
+            win_data[3 - game.winner] += 1
+
+        else:
+            win_data["Tie"] += 1
+
+    return win_data
 
 
-for _ in range(2):
-    players = [Charlie(), William()]
-    game = ConnectFour(players)
-    game.run_to_completion()
-    win_data[game.winner] += 1
-
-for _ in range(2):
-    players = [William(), Charlie()]
-    game = ConnectFour(players)
-    game.run_to_completion()
-
-    if game.winner != "Tie":
-        win_data[3 - game.winner] += 1
-
-    else:
-        win_data["Tie"] += 1
-
-print(win_data)
+print(f"WW VS MD {run_games(4, [William(), Maia()])}")
 
 '''
 players = [Justin(), SemiRandomPlayer()]
