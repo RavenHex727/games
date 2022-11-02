@@ -1,6 +1,7 @@
 import sys
 sys.path.append('tic_tac_toe')
 from game import *
+sys.path.append("tic_tac_toe/players")
 from random_player import *
 from input_player import *
 from heuristic_minimax import *

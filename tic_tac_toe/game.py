@@ -24,7 +24,7 @@ class TicTacToe:
         self.players[1].set_player_number(2)
 
     def player_num_board(self):
-        board_copy = [[None, None, None], [None, None, None], [None, None, None]]
+        board_copy = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
         for i in range(0, len(self.board)):
             for j in range(0, len(self.board[i])):
