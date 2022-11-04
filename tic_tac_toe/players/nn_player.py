@@ -54,9 +54,18 @@ class NNPlayer():
 
         else:
             return (2, max_index % 3)
+
+    def convert_to_negatives(self, game_board):
+        for i in range(len(game_board)):
+            for j in range(len(game_board[0])):
+                if game_board[i][j] == 2:
+                    game_board[i][j] = -1
+
+        return game_board
     
     def choose_move(self, game_board):
-        flattened_board = self.flatten(game_board)
+        converted_board = self.convert_to_negatives(game_board)
+        flattened_board = self.flatten(converted_board)
         results = self.neural_net.build_neural_net(flattened_board)
         taken_spots = [n for n in range(len(flattened_board)) if flattened_board[n] != 0]
 
