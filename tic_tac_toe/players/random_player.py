@@ -13,9 +13,9 @@ class RandomPlayer:
         self.number = n
     
     def get_possible_moves(self, board):
-        possible_moves = [(i,j) for i in range(3) for j in range(3) if board[i][j] == None]
+        possible_moves = [(i,j) for i in range(3) for j in range(3) if board[i][j] == 0]
         return possible_moves
     
     def choose_move(self, game_board):
-        choices = [(i,j) for i in range(len(game_board)) for j in range(len(game_board)) if game_board[i][j]==None]
+        choices = [(i,j) for i in range(len(game_board)) for j in range(len(game_board)) if game_board[i][j]==0]
         return random.choice(choices)
