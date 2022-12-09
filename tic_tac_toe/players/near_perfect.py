@@ -90,7 +90,6 @@ class NearPerfect:
                 perms = list(itertools.permutations(list(str(3 - self.number)*2 + str(self.number))))
                 perms = [''.join(perm) for perm in perms]
 
-                #1 in row blocking
                 perms1 = list(itertools.permutations(list(str(3 - self.number) + "0" * 2)))
                 perms1 = [''.join(perm) for perm in perms1]
 

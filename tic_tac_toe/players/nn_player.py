@@ -67,14 +67,15 @@ class NNPlayer():
         converted_board = self.convert_to_negatives(game_board)
         flattened_board = self.flatten(converted_board)
         assert len([n for n in flattened_board if n not in [-1, 0, 1]]) == 0, "Neural Net converted board to array incorrectly"
-        results = self.neural_net.build_neural_net(flattened_board)
         assert sum(flattened_board) == 0, "Flattened board is incorrect"
+        results = self.neural_net.build_neural_net(flattened_board)
         taken_spots = [n for n in range(len(flattened_board)) if flattened_board[n] != 0]
 
-        max_index = 0
+        max_index = random.choice([n for n in range(len(results)) if n not in taken_spots])
 
-        for n in range(len(results)):
+        for n in range(0, len(results)):
             if n not in taken_spots and results[n] > results[max_index]:
                 max_index = n
 
+        assert max_index not in taken_spots, "Player chose move was an already filled spot on the board"
         return self.convert_flattened_index_to_move(max_index)

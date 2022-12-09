@@ -6,6 +6,7 @@ from random_player import *
 from input_player import *
 from heuristic_minimax import *
 from minimax_player import *
+from near_perfect import *
 from top_left import *
 import time
 
@@ -176,6 +177,6 @@ for _ in range(10):
 print(f"9 ply vs Random {win_data}")
 '''
 
-players = [HeuristicMiniMax(ply=5), HeuristicMiniMax(ply=9)]
+players = [InputPlayer(), NearPerfect()]
 game = TicTacToe(players)
 game.run_to_completion()
