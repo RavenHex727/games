@@ -7,4 +7,4 @@ def transpose(input_board):
     return np.array(input_board).T.tolist()
 
 game_board = [[1,0,1], [2,0,1], [0,0,0]]
-print([1] + [2])
+print([n for n in range(2, 11)])

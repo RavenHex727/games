@@ -4,14 +4,22 @@ _|_|_
 
 _|_|_
 _|X|_
-_|_|O
+_|O|_
 
-_|_|O
+X|_|_
 _|X|_
-X|_|O
+_|O|O
+
+X|_|_
+O|X|X
+_|O|O
 
 X|_|O
-_|X|O
-X|_|O
+O|X|X
+X|O|O
 
-Player 2 won
+X|X|O
+O|X|X
+X|O|O
+
+Tie
